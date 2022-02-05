@@ -5,17 +5,16 @@ using UnityEngine.InputSystem;
 
 public class PS5testScript : MonoBehaviour
 {
-    [SerializeField]float ah;
-    [SerializeField]float av;
+    //Left Joystick Values
+    [Header ("Left Joystick values")]
+    [SerializeField] private float aH;
+    [SerializeField] private float aV;
+
     private void Update()
     {
-        ah = Input.GetAxis("Horizontal");
-        av = Input.GetAxis("Vertical");
-        transform.Translate(ah * 3 * Time.deltaTime, 0, av * 3 * Time.deltaTime);
-        if(Input.GetAxis("A/Cross") == 1)
-        {
-            print("a");
-        }
+        //Movement
+        aH = Input.GetAxis("Horizontal");
+        aV = Input.GetAxis("Vertical");
+        transform.Translate(aH * 3 * Time.deltaTime, 0, aV * 3 * Time.deltaTime);
     }
-    
 }
