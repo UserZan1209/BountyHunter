@@ -15,6 +15,6 @@ public class PS5testScript : MonoBehaviour
         //Movement
         aH = Input.GetAxis("Horizontal");
         aV = Input.GetAxis("Vertical");
-        transform.Translate(aH * 3 * Time.deltaTime, 0, aV * 3 * Time.deltaTime);
+        transform.Translate(aH * 3 * Time.deltaTime, 0, aV * 3.5f * Time.deltaTime);
     }
 }
