@@ -39,5 +39,8 @@ public class playerCameraMovement : MonoBehaviour
         transform.position = lookAt.position + rotation * Direction;
 
         transform.LookAt(lookAt.position);
+
+        //makes player face the same direction as camera on the y axis
+        Player.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
     }
 }
