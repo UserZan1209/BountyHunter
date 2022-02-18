@@ -41,7 +41,7 @@ public class playerCameraMovement : MonoBehaviour
         transform.LookAt(lookAt.position);
 
         //makes player face the same direction as camera on the y axis
-        if(Player.GetComponent<playerMovement>().playerRagdollstate != playerMovement.playerRagdollState.isRagdoll)
+        if(Player.GetComponent<playerMovement>().my_ragdoll_state != playerMovement.RagdollState.isRagdoll)
         {
             Player.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
         }
