@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class playerMovement : player
 {
-
-    // https://www.moddb.com/games/unspottable/news/blending-ragdoll-physics-and-animation-in-unity
-
     playerControlMethod playerControllerMethod = playerControlMethod.controller;
 
-    CharacterController Controller;
     [Header("Camera Controller")]
     [SerializeField] public float Speed;
-
     [SerializeField] public Transform Cam;
 
 
@@ -28,8 +23,8 @@ public class playerMovement : player
             toggleRagdoll();
         }
 
-        myAnim.SetFloat("aH", base.aH);
-        myAnim.SetFloat("aV", base.aV);
+        myAnim.SetFloat("aH", aH);
+        myAnim.SetFloat("aV", aV);
 
         inputActions();
         cameraController();
@@ -37,9 +32,9 @@ public class playerMovement : player
 
     private void FixedUpdate()
     {
-        //Movement
         if (health > 0)
         {
+            //Movement
             movementController();
         }
         else

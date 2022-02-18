@@ -8,7 +8,7 @@ public abstract class character : MonoBehaviour
     [SerializeField] protected float speed = 6;
 
 
-    [Header("References")]
+    [Header("my References")]
     [SerializeField] protected GameObject myGameObject;
     [SerializeField] protected Rigidbody myRB;
     [SerializeField] protected Animator myAnim;
@@ -18,7 +18,7 @@ public abstract class character : MonoBehaviour
     [HideInInspector] public enum RagdollState { isRagdoll, isNotRagdoll }
     protected enum MovementState { isPhysics, isNotPhysics }
 
-    [Header("Player states")]
+    [Header("my states")]
     [SerializeField] protected LifeState my_life_state = LifeState.isalive;
     //this enum is public due to the camera accessing it to prevent player rotoation while ragdolled
     [SerializeField] public RagdollState my_ragdoll_state = RagdollState.isNotRagdoll;

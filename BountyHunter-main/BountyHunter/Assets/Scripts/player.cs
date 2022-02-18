@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class player : character
 {
-    [Header("Left Joystick values")]
+    [Header("Left Joystick Values")]
     [SerializeField] protected float aH;
     [SerializeField] protected float aV;
 
-    [Header("Right Joystick values")]
+    [Header("Right Joystick Values")]
     [SerializeField] protected float bH;
     [SerializeField] protected float bV;
 
-    [Header("Player stat values")]
+    [Header("My Camera Stat Values")]
     [SerializeField] protected float playerRotation = 10; // not the var used for camera sensiivity, just to make player face same dir as cam
     [SerializeField] protected float defaultFov;
 
@@ -22,7 +22,7 @@ public class player : character
     //determines how the player will move based on the health and movement states
     protected void movementController()
     {
-        // aH and aV are also mapped to the left stick of a controller aswell as w,a,s,d
+        // aH and aV are also mapped to the left stick and right stick of a controller aswell as w,a,s,d
         aH = Input.GetAxis("Horizontal");
         aV = Input.GetAxis("Vertical");
 
