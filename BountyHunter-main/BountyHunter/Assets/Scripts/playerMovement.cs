@@ -35,17 +35,18 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private int playerHealth = 10;
     [SerializeField] private int Force = 100;
     [SerializeField] private float playerRotation = 10; // not the var used for camera sensiivity, just to make player face same dir as cam
+    [SerializeField] private float defaultFov;
 
 
     // player enums for different states
     private enum playerLife { isdead, isalive }
-    private enum playerRagdollState { isRagdoll, isNotRagdoll }
+    [HideInInspector]public enum playerRagdollState { isRagdoll, isNotRagdoll }
     private enum playerMovementState { isPhysics, isNotPhysics }
     private enum playerControlMethod { controller, keyboard }
 
     [Header("Player states")]
     [SerializeField] private playerLife playerLifeState = playerLife.isalive;
-    [SerializeField] private playerRagdollState playerRagdollstate = playerRagdollState.isNotRagdoll;
+    [SerializeField] public playerRagdollState playerRagdollstate = playerRagdollState.isNotRagdoll;
     [SerializeField] private playerMovementState playerMovementstate = playerMovementState.isNotPhysics;
     [SerializeField] private playerControlMethod playerControllerMethod = playerControlMethod.keyboard;
 
@@ -65,7 +66,14 @@ public class playerMovement : MonoBehaviour
     }
     private void Update()
     {
+        if(playerHealth > 0)
+        {
+            toggleRagdoll();
+        }
 
+        playerAnimator.SetFloat("aH", aH);
+        playerAnimator.SetFloat("aV", aV);
+        actions();
         cameraController();
     }
 
@@ -89,9 +97,11 @@ public class playerMovement : MonoBehaviour
             {
 
                 case playerMovementState.isPhysics:
+                    playerAnimator.SetBool("isRagdoll", true);
                     forcePlayer();
                     break;
                 case playerMovementState.isNotPhysics:
+                    playerAnimator.SetBool("isRagdoll", false);
                     transformPlayer();
                     break;
             }
@@ -112,18 +122,55 @@ public class playerMovement : MonoBehaviour
     }
     private void transformPlayer()
     {
-        transform.Translate(aH * 3 * Time.deltaTime, 0, aV * 3.5f * Time.deltaTime);
+        transform.Translate(aH * 6 * Time.deltaTime, 0, aV * 7f * Time.deltaTime);
     }
 
-    private void forcePlayer()// ERROR
+    private void forcePlayer()
     {
-        if(aH != 0 || aV != 0)
+        playerJump();
+
+    }
+
+    private void actions()
+    {
+        if (Input.GetButtonUp("X/Square") || Input.GetKeyUp(KeyCode.Q))
         {
-            foreach (Rigidbody rigidbody in rigidbodyInChildren)
-            {
-               
-            }
+            playerAnimator.SetTrigger("x/square");
         }
+        else
+        {
+            playerAnimator.ResetTrigger("x/square");
+        }
+
+        if (Input.GetButtonUp("Y/Triangle") || Input.GetKeyUp(KeyCode.E))
+        {
+            playerAnimator.SetTrigger("y/triangle");
+        }
+        else
+        {
+            playerAnimator.ResetTrigger("y/triangle");
+        }
+        if (Input.GetButtonUp("A/Cross") || Input.GetKeyUp(KeyCode.R))
+        {
+            playerAnimator.SetTrigger("a/cross");
+        }
+        else
+        {
+            playerAnimator.ResetTrigger("a/cross");
+        }
+
+        if (aH != 0 || aV != 0)
+        {
+            running();
+        }
+        else
+        {
+            playerAnimator.SetBool("isRunning", false);
+
+        }
+
+        
+
     }
     private void playerJump()// ERROR
     {
@@ -131,7 +178,7 @@ public class playerMovement : MonoBehaviour
         {
             foreach(Rigidbody rb in rigidbodyInChildren)
             {
-                //rb.AddForce(Vector3.up * (Force*100) * Time.deltaTime,ForceMode.Acceleration);
+                //rb.AddForce(Vector3.up * (Force*30) * Time.deltaTime,ForceMode.Impulse);
             }
         }
     }
@@ -163,6 +210,10 @@ public class playerMovement : MonoBehaviour
         }
     }
 
+    private void running()
+    {
+        playerAnimator.SetBool("isRunning", true);
+    }
     private void cameraController()
     {
         float Horizontal = Input.GetAxis("Horizontal") * Speed * Time.deltaTime;
