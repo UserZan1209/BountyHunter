@@ -16,6 +16,8 @@ public class player : character
     [SerializeField] protected float playerRotation = 10; // not the var used for camera sensiivity, just to make player face same dir as cam
     [SerializeField] protected float defaultFov;
 
+    [Header("My Combat related values")]
+    [SerializeField] public bool isAttacking;
 
     protected enum playerControlMethod { controller, keyboard }
 
@@ -58,7 +60,7 @@ public class player : character
     //jump (dosnt work at the moment)
     protected void playerJump()
     {
-        if (Input.GetButtonUp("B/Circle"))
+        if (Input.GetButtonUp("B/Circle") || Input.GetKeyUp(KeyCode.J))
         {
             foreach (Rigidbody rb in rigidbodyInChildren)
             {
@@ -92,8 +94,10 @@ public class player : character
         {
             myAnim.enabled = false;
             my_life_state = LifeState.isdead;
+
         }
     }
+
     protected void running()
     {
         myAnim.SetBool("isRunning", true);
@@ -104,6 +108,7 @@ public class player : character
         if (Input.GetButtonUp("X/Square") || Input.GetKeyUp(KeyCode.Q))
         {
             myAnim.SetTrigger("x/square");
+            isAttacking = true;
         }
         else
         {
@@ -113,6 +118,7 @@ public class player : character
         if (Input.GetButtonUp("Y/Triangle") || Input.GetKeyUp(KeyCode.E))
         {
             myAnim.SetTrigger("y/triangle");
+            isAttacking = true;
         }
         else
         {
@@ -137,4 +143,5 @@ public class player : character
 
         }
     }
+
 }

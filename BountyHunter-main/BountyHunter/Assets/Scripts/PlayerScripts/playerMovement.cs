@@ -9,7 +9,7 @@ public class playerMovement : player
     [Header("Camera Controller")]
     [SerializeField] public float Speed;
     [SerializeField] public Transform Cam;
-
+    protected string[] attackChecks = { "animPunch", "animAttack" };
 
     private void Start()
     {
@@ -28,6 +28,22 @@ public class playerMovement : player
 
         inputActions();
         cameraController();
+
+        for(int i = 0; i < attackChecks.Length; i++)
+        {
+           
+            if (myAnim.GetCurrentAnimatorStateInfo(0).IsName(attackChecks[i]))
+            {
+                isAttacking = true;
+            }
+        }
+        if (myAnim.GetCurrentAnimatorStateInfo(0).IsName("animIdle"))
+        {
+            isAttacking = false;
+        }
+       
+
+        
     }
 
     private void FixedUpdate()
