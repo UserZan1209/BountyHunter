@@ -87,7 +87,7 @@ public class player : character
                 my_ragdoll_state = RagdollState.isNotRagdoll;
                 my_movement_state = MovementState.isNotPhysics;
             }
-
+            // UPDATE ^^^^^^^^^^^^^^^ : https://answers.unity.com/questions/39793/enable-or-disable-rigid-body-at-runtime.html
         }
 
         if (health <= 0)

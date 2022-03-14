@@ -9,16 +9,24 @@ public class playerWeaponManager : MonoBehaviour
 
     [Header("My Currant Weapons")]
     [SerializeField] protected GameObject myMeleeWeapon;
+
+    [Header("my References")]
+    [SerializeField] private GameObject player;
+    
     // Start is called before the first frame update
     void Start()
     {
-          
+        player = this.gameObject;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if(player.gameObject.GetComponent<playerMovement>().my_ragdoll_state == character.RagdollState.isRagdoll)
+        {
+            //change fuctionallity to drop the currantly held weapon
+            dropWeapon();
+        }
     }
 
     protected void OnTriggerStay(Collider other)
@@ -26,7 +34,6 @@ public class playerWeaponManager : MonoBehaviour
         switch (other.gameObject.tag)
         {
             case "Wmelee":
-
                 print("Colliding with a melee weapon");
                 other.GetComponent<Weapon>().rightHand = myRightHand;
 
@@ -44,13 +51,29 @@ public class playerWeaponManager : MonoBehaviour
 
                     print("aaa");
                     other.gameObject.transform.SetParent(myRightHand.transform);
-                    myMeleeWeapon.gameObject.transform.localPosition = myRightHand.transform.localPosition;
-                    myMeleeWeapon.gameObject.transform.localRotation = myRightHand.transform.localRotation;
+
+                    if(other.transform.childCount > 1)
+                    {
+                        // when the weapon has more than one grab point on the weapon
+                    }
+                    else
+                    {
+                        myMeleeWeapon.gameObject.transform.localPosition = myRightHand.transform.localPosition;
+                        myMeleeWeapon.gameObject.transform.localRotation = myRightHand.transform.localRotation;
+
+                    }
                 }
 
                 other.GetComponent<Weapon>().isPickedUp = true;
-
                 break;
         }
     }
+
+    protected void dropWeapon()
+    {
+        myMeleeWeapon.GetComponent<Weapon>().isPickedUp = false;
+        myMeleeWeapon.transform.parent = null;
+    }
 }
+
+

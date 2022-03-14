@@ -83,4 +83,9 @@ public class playerMovement : player
 
 
     }
+
+    public void healPlayer(float h)
+    {
+        health += h;
+    }
 }

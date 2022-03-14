@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class melee : Weapon
 {
+    //this is only on melee weapons as other weapons rely on projectile based
     [SerializeField]protected bool isPlayerAttacking;
 
     protected void OnTriggerEnter(Collider other)
