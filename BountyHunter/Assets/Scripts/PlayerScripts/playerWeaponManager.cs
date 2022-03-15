@@ -25,7 +25,10 @@ public class playerWeaponManager : MonoBehaviour
         if(player.gameObject.GetComponent<playerMovement>().my_ragdoll_state == character.RagdollState.isRagdoll)
         {
             //change fuctionallity to drop the currantly held weapon
-            dropWeapon();
+            if(myMeleeWeapon != null)
+            {
+                dropWeapon();
+            }
         }
     }
 
@@ -43,24 +46,20 @@ public class playerWeaponManager : MonoBehaviour
                     if(myMeleeWeapon == null)
                     {
                         myMeleeWeapon = other.gameObject;
+                        myMeleeWeapon.GetComponent<Weapon>().setHand(myRightHand);
+
+                        other.gameObject.transform.SetParent(myRightHand.transform);
                     }
-                    else
+                    else if(Input.GetKeyDown(KeyCode.K))
                     {
                         //ask player to swap weapons
+                        dropWeapon();
                     }
 
-                    print("aaa");
-                    other.gameObject.transform.SetParent(myRightHand.transform);
 
                     if(other.transform.childCount > 1)
                     {
                         // when the weapon has more than one grab point on the weapon
-                    }
-                    else
-                    {
-                        myMeleeWeapon.gameObject.transform.localPosition = myRightHand.transform.localPosition;
-                        myMeleeWeapon.gameObject.transform.localRotation = myRightHand.transform.localRotation;
-
                     }
                 }
 
@@ -72,6 +71,7 @@ public class playerWeaponManager : MonoBehaviour
     protected void dropWeapon()
     {
         myMeleeWeapon.GetComponent<Weapon>().isPickedUp = false;
+        myMeleeWeapon.GetComponent<Weapon>().nullHand();
         myMeleeWeapon.transform.parent = null;
     }
 }

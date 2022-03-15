@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class character : MonoBehaviour
 {
-    [SerializeField] protected float health = 10;
+    [SerializeField] public float health = 10;
     [SerializeField] protected float speed = 6;
 
 
