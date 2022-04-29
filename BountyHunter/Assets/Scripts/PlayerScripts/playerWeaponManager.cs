@@ -7,16 +7,25 @@ public class playerWeaponManager : MonoBehaviour
     [Header("My Weapon Slots")]
     [SerializeField] protected GameObject myRightHand;
 
-    [Header("My Currant Weapons")]
+    [Header("My Weapons")]
     [SerializeField] protected GameObject myMeleeWeapon;
+    [SerializeField] protected GameObject myRangedWeapon;
+    [SerializeField] protected GameObject myFists;
+
+    [SerializeField] public GameObject myCurrantWeapon;
+
+    [SerializeField] protected GameObject myTargetWeapon;
 
     [Header("my References")]
     [SerializeField] private GameObject player;
+    [SerializeField] protected playerMovement playerMovementRef;
+
     
     // Start is called before the first frame update
     void Start()
     {
         player = this.gameObject;
+        playerMovementRef = this.gameObject.GetComponent<playerMovement>();
     }
 
     // Update is called once per frame
@@ -25,54 +34,180 @@ public class playerWeaponManager : MonoBehaviour
         if(player.gameObject.GetComponent<playerMovement>().my_ragdoll_state == character.RagdollState.isRagdoll)
         {
             //change fuctionallity to drop the currantly held weapon
-            if(myMeleeWeapon != null)
+            if(myCurrantWeapon != null)
             {
-                dropWeapon();
+                dropWeapon(myCurrantWeapon);
             }
         }
-    }
+        if(myMeleeWeapon != null && myRangedWeapon != null)
+        {
+            if (Input.GetKeyUp(KeyCode.Tab))
+            {
+                swapWeapon();
+            }
+        }
 
+        else if (myMeleeWeapon == null || myRangedWeapon == null)
+        {
+           // Debug.Log("not enough weapons to switch");
+        }
+
+        weaponManager();
+    }
+    protected void OnTriggerEnter(Collider other)
+    {
+        if(other.GetComponent<Weapon>() != null)
+        {
+            myTargetWeapon = other.gameObject;
+        }
+    }
     protected void OnTriggerStay(Collider other)
     {
-        switch (other.gameObject.tag)
+        if (player.GetComponent<playerMovement>().my_ragdoll_state == character.RagdollState.isNotRagdoll && myTargetWeapon != null)
         {
-            case "Wmelee":
-                print("Colliding with a melee weapon");
-                other.GetComponent<Weapon>().rightHand = myRightHand;
-
-                if (other.GetComponent<Weapon>().isPickedUp != true)
-                {
-                    
-                    if(myMeleeWeapon == null)
+            switch (other.gameObject.tag)
+            {
+                case "WoneHand":
+                    if (myTargetWeapon.name == "weaponMelee" && myMeleeWeapon == null)
                     {
                         myMeleeWeapon = other.gameObject;
-                        myMeleeWeapon.GetComponent<Weapon>().setHand(myRightHand);
-
-                        other.gameObject.transform.SetParent(myRightHand.transform);
+                        equipOneHandedWeapon(myTargetWeapon);
+                        //Debug.Log("melee equiped");
                     }
-                    else if(Input.GetKeyDown(KeyCode.K))
+                    else if (myTargetWeapon.name == "weaponPistol" && myRangedWeapon == null)
                     {
-                        //ask player to swap weapons
-                        dropWeapon();
+                        myRangedWeapon = other.gameObject;
+                        equipOneHandedWeapon(myTargetWeapon);
+                        //Debug.Log("pistol equiped");
                     }
+                    break;
+            }
+        }
+        else
+        {
+            //Debug.Log("cannot interact while in a ragdoll");
+        }
 
-
-                    if(other.transform.childCount > 1)
-                    {
-                        // when the weapon has more than one grab point on the weapon
-                    }
-                }
-
-                other.GetComponent<Weapon>().isPickedUp = true;
-                break;
+    }
+    protected void OnTriggerExit(Collider other)
+    {
+        if(myTargetWeapon != null)
+        {
+            myTargetWeapon = null;
         }
     }
 
-    protected void dropWeapon()
+    protected void equipOneHandedWeapon(GameObject cWeapon)
     {
-        myMeleeWeapon.GetComponent<Weapon>().isPickedUp = false;
-        myMeleeWeapon.GetComponent<Weapon>().nullHand();
-        myMeleeWeapon.transform.parent = null;
+        myTargetWeapon.GetComponent<Weapon>().rightHand = myRightHand;
+
+        if (myTargetWeapon.GetComponent<Weapon>().isPickedUp != true)
+        { 
+            if (myCurrantWeapon == null)
+            {
+                myCurrantWeapon = myTargetWeapon.gameObject;
+                myCurrantWeapon.GetComponent<Weapon>().setHand(myRightHand);
+
+                myTargetWeapon.gameObject.transform.SetParent(myRightHand.transform);
+            }
+            else
+            {
+                myTargetWeapon.GetComponent<Weapon>().setHand(myRightHand);
+                myTargetWeapon.gameObject.transform.SetParent(myRightHand.transform);
+                myCurrantWeapon.SetActive(false);
+                myCurrantWeapon = myTargetWeapon;
+            }
+
+            myTargetWeapon.GetComponent<Weapon>().isPickedUp = true;
+        }
+
+        myCurrantWeapon.SetActive(true);
+    }
+
+    protected void dropWeapon(GameObject cWeapon)
+    {
+        //pass through a gameobject and drop the specified gameobject
+
+        //clear up the slots
+        switch (cWeapon.name)
+        {
+            case "weaponMelee":
+                myMeleeWeapon = null;
+                break;
+            case "weaponPistol":
+                myRangedWeapon = null;
+                break;
+        }
+
+        //disconnect object from the player
+        myCurrantWeapon.GetComponent<Weapon>().isPickedUp = false;
+        myCurrantWeapon.GetComponent<Weapon>().nullHand();
+        myCurrantWeapon.transform.parent = null;
+        myCurrantWeapon = null;
+    }
+
+    public void dropEverything()
+    {
+        //this function is used when the player runs out of stamina
+
+        if(myMeleeWeapon != null)
+        {
+            dropWeapon(myMeleeWeapon);
+        }
+
+        if(myRangedWeapon != null)
+        {
+            dropWeapon(myRangedWeapon);
+        }
+    }
+
+    protected void swapWeapon()
+    {
+        if(myCurrantWeapon.gameObject == myRangedWeapon)
+        {
+            myCurrantWeapon = myMeleeWeapon;
+        }
+        else if(myCurrantWeapon.gameObject == myCurrantWeapon)
+        {
+            myCurrantWeapon = myRangedWeapon;
+        }
+
+
+    }
+    protected void weaponManager()
+    {
+        if(myCurrantWeapon != null)
+        {
+            switch (myCurrantWeapon.name)
+            {
+                case "weaponMelee":
+                    print("holding melee");
+                    if (myMeleeWeapon != null)
+                    {
+                        player.GetComponent<playerMovement>().attackMethod = playerMovement.playerAttackMethod.melee;
+                        if(myRangedWeapon != null)
+                        {
+                            myRangedWeapon.SetActive(false);
+                        }
+                        myMeleeWeapon.SetActive(true);
+                    }
+                    break;
+                case "weaponPistol":
+                    if (myRangedWeapon != null)
+                    {
+                        player.GetComponent<playerMovement>().attackMethod = playerMovement.playerAttackMethod.oneHand;
+                        if(myMeleeWeapon != null)
+                        {
+                            myMeleeWeapon.SetActive(false);
+                        }
+                        myRangedWeapon.SetActive(true);
+                    }
+                    break;
+                default:
+                    player.GetComponent<playerMovement>().attackMethod = playerMovement.playerAttackMethod.none;
+                    break;
+            }
+        }
     }
 }
 

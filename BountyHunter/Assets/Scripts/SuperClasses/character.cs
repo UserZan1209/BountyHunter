@@ -4,14 +4,17 @@ using UnityEngine;
 
 public abstract class character : MonoBehaviour
 {
-    [SerializeField] public float health = 10;
-    [SerializeField] protected float speed = 6;
+    [SerializeField] public float health = 100.0f;
+    [SerializeField] public float stamina = 100.0f;
+    [SerializeField] protected float speed = 6.0f;
+    [SerializeField] protected float defSpeed;
 
 
     [Header("my References")]
     [SerializeField] protected GameObject myGameObject;
     [SerializeField] protected Rigidbody myRB;
     [SerializeField] protected Animator myAnim;
+    [SerializeField] public bool isAiming;
 
     // enums for different states
     protected enum LifeState { isdead, isalive }
@@ -33,6 +36,7 @@ public abstract class character : MonoBehaviour
         myRB = myGameObject.GetComponent<Rigidbody>();
         rigidbodyInChildren = GetComponentsInChildren<Rigidbody>();
         myAnim = myGameObject.GetComponent<Animator>();
+        defSpeed = speed;
     }
 
     protected virtual void toggleRagdoll()

@@ -15,11 +15,11 @@ public class player : character
     [Header("My Camera Stat Values")]
     [SerializeField] protected float playerRotation = 10; // not the var used for camera sensiivity, just to make player face same dir as cam
     [SerializeField] protected float defaultFov;
+    [SerializeField] protected float aimingFov;
 
     [Header("My Combat related values")]
     [SerializeField] public bool isAttacking;
-
-    protected enum playerControlMethod { controller, keyboard }
+    [SerializeField] protected bool canAim;
 
     //determines how the player will move based on the health and movement states
     protected void movementController()
@@ -49,7 +49,7 @@ public class player : character
     //used to move the player outside of ragdolling
     protected void transformPlayer()
     {
-        transform.Translate(aH * 6 * Time.deltaTime, 0, aV * 7f * Time.deltaTime);
+        transform.Translate(aH * speed * Time.deltaTime, 0, aV * speed * Time.deltaTime);
     }
     //used to add a force upwards
     protected void forcePlayer()
@@ -103,12 +103,27 @@ public class player : character
         myAnim.SetBool("isRunning", true);
     }
 
+    protected void aimingManager()
+    {
+   
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            myAnim.SetBool("isAiming", true);
+        }
+        else if (Input.GetKeyUp(KeyCode.Mouse1))
+        {
+            myAnim.SetBool("isAiming", false);
+        }
+
+    }
+
     protected void inputActions()
     {
         if (Input.GetButtonUp("X/Square") || Input.GetKeyUp(KeyCode.Q))
         {
             myAnim.SetTrigger("x/square");
             isAttacking = true;
+            stamina -= 20.0f;
         }
         else
         {
@@ -119,6 +134,7 @@ public class player : character
         {
             myAnim.SetTrigger("y/triangle");
             isAttacking = true;
+            stamina -= 35.0f;
         }
         else
         {
@@ -131,6 +147,17 @@ public class player : character
         else
         {
             myAnim.ResetTrigger("a/cross");
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            isAiming = true;
+            speed = defSpeed / 2.5f;
+            
+           
+        }
+        else if(Input.GetKeyUp(KeyCode.Mouse1))
+        {
+            speed = defSpeed;
         }
 
         if (aH != 0 || aV != 0)

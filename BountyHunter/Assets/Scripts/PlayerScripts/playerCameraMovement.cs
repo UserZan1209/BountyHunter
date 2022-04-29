@@ -12,11 +12,13 @@ public class playerCameraMovement : MonoBehaviour
 
     [SerializeField]public Transform Player;
 
-    [SerializeField] public float distance = 10.0f;
+    [SerializeField] public float distance = 5.0f;
     [SerializeField] private float currentX = 0.0f;
     [SerializeField] private float currentY = 0.0f;
     [SerializeField] public float sensivity = 4.0f;
 
+    float aimDir = 50.0f;
+    bool isRight = true;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +38,7 @@ public class playerCameraMovement : MonoBehaviour
 
         Vector3 Direction = new Vector3(0, 0, -distance);
         Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
+        //add an aiming offset
         transform.position = lookAt.position + rotation * Direction;
 
         transform.LookAt(lookAt.position);

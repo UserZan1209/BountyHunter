@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - grabPoint
   - gameManager
+  - WoneHand
   layers:
   - Default
   - TransparentFX

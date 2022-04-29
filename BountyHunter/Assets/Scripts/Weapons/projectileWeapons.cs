@@ -4,25 +4,41 @@ using UnityEngine;
 
 public class projectileWeapons : Weapon
 {
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] float fireRate;
+    [SerializeField] GameObject projectile;
 
-    // Update is called once per frame
-    void Update()
+    [SerializeField] protected GameObject bulletStartObj;
+   
+    private void Update()
     {
-        
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.gameObject.name == "mixamorig:RightHand")
+       
+        if (isPickedUp)
         {
-            rHand = collision.gameObject;
-            print("test");
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                fireWeapon(fireRate);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                cam.GetComponent<playerCameraMovement>().distance = 2;
+            }
+            else if (Input.GetKeyUp(KeyCode.Mouse1))
+            {
+                cam.GetComponent<playerCameraMovement>().distance = 5;
+            }
+        }
+    }
+    void fireWeapon(float fireRate)
+    {
+        for(int i = 0; i < fireRate; i++)
+        {
+            print(transform.GetChild(3).gameObject.name);
+
+            GameObject inst = Instantiate(projectile,transform.position ,bulletStartObj.transform.rotation);
+
+            inst.transform.SetParent(this.transform);
+
         }
     }
 }

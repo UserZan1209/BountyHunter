@@ -9,7 +9,7 @@ public class Weapon : MonoBehaviour
 
     [HeaderAttribute("My References")]
     [SerializeField] public GameObject player;
-    //[SerializeField] protected BoxCollider myCollider;
+    [SerializeField] protected BoxCollider myCollider;
     [SerializeField] protected Rigidbody myRB;
     [SerializeField] public GameObject rightHand;
     [SerializeField] public GameObject[] grabPoints;
@@ -18,11 +18,14 @@ public class Weapon : MonoBehaviour
 
     [SerializeField] protected bool isPlayerAttacking;
 
+    protected Camera cam;
+
     protected void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         grabPoints = GameObject.FindGameObjectsWithTag("grabPoint");
         myRB = this.gameObject.GetComponent<Rigidbody>();
+        cam = Camera.main;
     }
 
     protected void FixedUpdate()
@@ -34,12 +37,17 @@ public class Weapon : MonoBehaviour
             {
                 transform.position = rightHand.transform.position;
                 transform.rotation = rightHand.transform.rotation;
+
+                //transform.rotation = new Quaternion(0,-transform.rotation.y,0,0);
+
+                myCollider.enabled = false;
                 
             }
         }
         else if (!isPickedUp)
         {
             myRB.isKinematic = false;
+            myCollider.enabled = true;
         }
     }
 
@@ -51,9 +59,15 @@ public class Weapon : MonoBehaviour
             other.gameObject.GetComponent<Enemy>().takeDamage(damage);
             isPlayerAttacking = false;
         }
+
+        if (other.gameObject.name == "mixamorig:RightHand")
+        {
+            rHand = other.gameObject;
+            Debug.Log(gameObject.name + " has detected the players hand");
+        }
     }
 
-    bool checkIfAttacking()
+    protected bool checkIfAttacking()
     {
         //Check the parent player object is attacking so the weapon can tell if its just
         //a random collision.
