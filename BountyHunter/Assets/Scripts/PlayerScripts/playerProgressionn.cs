@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class playerProgressionn : MonoBehaviour
 {
-    [SerializeField] private int level;
+    [SerializeField] public int level;
     [SerializeField] public float totalXP;
     [SerializeField] public float requiredXP;
     [SerializeField] public float XPthisLevel;
@@ -21,8 +21,17 @@ public class playerProgressionn : MonoBehaviour
     {
         if (totalXP >= requiredXP)
         {
-            level++;
+            //calculate if the the remainder to check if its not a clean level
+            float remainder = totalXP -= requiredXP;
             XPthisLevel = 0;
+
+            //if there is a remainder add it back to xp this level
+            if (remainder > 0)
+            {
+                XPthisLevel += remainder;
+            }
+            level++;
+            //checks how much exp will be needed for the next level
             calculateReqExp();
         }
     }

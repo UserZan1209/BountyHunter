@@ -27,6 +27,7 @@ public class playerMovement : player
     }
     private void Update()
     {
+        //if player is alive then allow stamina to recover and ragdoll toggle is avaliable
         if(health > 0)
         {
             if(stamina > 0.5f)
@@ -36,11 +37,12 @@ public class playerMovement : player
             
             if(my_ragdoll_state != RagdollState.isRagdoll && stamina < 100.0f)
             {
-                stamina += Time.deltaTime;
+                stamina += Time.deltaTime * 2.5f;
             }
             
         }
 
+        //if the stamina is too low then drop all weapons and ragdoll
         if(stamina <= 0.5f)
         {
             this.GetComponent<playerWeaponManager>().dropEverything();
@@ -50,16 +52,20 @@ public class playerMovement : player
             stamina = 1.0f;
         }
 
+        //send axis aH, aV to the animator
         myAnim.SetFloat("aH", aH);
         myAnim.SetFloat("aV", aV);
 
+        //the function is incharge of managing the inputs
         inputActions();
         cameraController();
+
+        //lets the animator know when the player is aiming
         aimingManager();
 
         for(int i = 0; i < attackChecks.Length; i++)
         {
-           
+            //uses the name of the animation currantly playing to determine if the player is attacking
             if (myAnim.GetCurrentAnimatorStateInfo(0).IsName(attackChecks[i]))
             {
                 isAttacking = true;
@@ -73,20 +79,24 @@ public class playerMovement : player
 
     private void FixedUpdate()
     {
+
+        movementManager();
+    }
+
+    protected void movementManager()
+    {
         if (health > 0)
         {
-            //Movement
             movementController();
         }
         else
         {
             toggleRagdoll();
         }
-
     }
-
     private void cameraController()
     {
+        //allows the camera to control the rotation of the player
         float Horizontal = Input.GetAxis("Horizontal") * Speed * Time.deltaTime;
         float Vertical = Input.GetAxis("Vertical") * Speed * Time.deltaTime;
 

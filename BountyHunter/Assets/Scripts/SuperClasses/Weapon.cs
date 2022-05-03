@@ -1,11 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Weapon : MonoBehaviour
 {
+    //Base class variables
+    [HeaderAttribute("Variables")]
     [SerializeField] public float damage;
+    [SerializeField] public Sprite icon;
     [SerializeField] public bool isPickedUp = false;
+    [SerializeField] protected bool isPlayerAttacking;
+    protected Camera cam;
 
     [HeaderAttribute("My References")]
     [SerializeField] public GameObject player;
@@ -13,12 +19,8 @@ public class Weapon : MonoBehaviour
     [SerializeField] protected Rigidbody myRB;
     [SerializeField] public GameObject rightHand;
     [SerializeField] public GameObject[] grabPoints;
-
     [SerializeField] protected GameObject rHand;
 
-    [SerializeField] protected bool isPlayerAttacking;
-
-    protected Camera cam;
 
     protected void Start()
     {
@@ -30,25 +32,7 @@ public class Weapon : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        if (isPickedUp)
-        {
-            myRB.isKinematic = true;
-            if(rightHand != null)
-            {
-                transform.position = rightHand.transform.position;
-                transform.rotation = rightHand.transform.rotation;
-
-                //transform.rotation = new Quaternion(0,-transform.rotation.y,0,0);
-
-                myCollider.enabled = false;
-                
-            }
-        }
-        else if (!isPickedUp)
-        {
-            myRB.isKinematic = false;
-            myCollider.enabled = true;
-        }
+        pickupManager();         
     }
 
     protected void OnTriggerEnter(Collider other)
@@ -60,10 +44,34 @@ public class Weapon : MonoBehaviour
             isPlayerAttacking = false;
         }
 
+        //responsible for informing the weapon where the gameobject for the right hand is located
         if (other.gameObject.name == "mixamorig:RightHand")
         {
             rHand = other.gameObject;
             Debug.Log(gameObject.name + " has detected the players hand");
+        }
+    }
+
+    void pickupManager()
+    {
+        if (isPickedUp)
+        {
+            myRB.isKinematic = true;
+            if (rightHand != null)
+            {
+                transform.position = rightHand.transform.position;
+                transform.rotation = rightHand.transform.rotation;
+
+                //transform.rotation = new Quaternion(0,-transform.rotation.y,0,0);
+
+                myCollider.enabled = false;
+
+            }
+        }
+        else if (!isPickedUp)
+        {
+            myRB.isKinematic = false;
+            myCollider.enabled = true;
         }
     }
 
@@ -84,4 +92,5 @@ public class Weapon : MonoBehaviour
     {
         rHand = null;
     }
+
 }

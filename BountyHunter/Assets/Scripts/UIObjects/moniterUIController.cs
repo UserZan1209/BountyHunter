@@ -9,17 +9,24 @@ public class moniterUIController : MonoBehaviour
     [SerializeField] private Camera cam;
     [SerializeField] private Transform playerHead;
 
-    [SerializeField] public Image computerScreen;
-    [SerializeField] public Image interactPromptK;
-    [SerializeField] public Image interactPromptC;
+    [SerializeField] public GameObject computerScreen;
+    [SerializeField] public Canvas computerCanvas;
+    [SerializeField] public Image Screen;
+    [SerializeField] public Image interactPromptKimage;
+    [SerializeField] public Sprite interactPromptK;
+    [SerializeField] public Sprite interactPromptC;
+
 
     private bool isOn;
     // Start is called before the first frame update
     void Start()
     {
-        computerScreen.enabled = false;
+        interactPromptKimage.sprite = interactPromptK;
+        interactPromptKimage.enabled = false;
+        computerScreen.SetActive(false);
         cam = Camera.main;
         playerHead = cam.GetComponent<playerCameraMovement>().lookAt;
+
     }
 
     // Update is called once per frame
@@ -27,24 +34,25 @@ public class moniterUIController : MonoBehaviour
     {
         if(player != null)
         {
-            if (Input.GetKeyUp(KeyCode.E) && computerScreen.enabled == false)
+            if (Input.GetKeyUp(KeyCode.E) && computerScreen.activeInHierarchy == false)
             {
                 isOn = true;
                 cam.GetComponent<playerCameraMovement>().lookAt = computerScreen.transform;
                 cam.GetComponent<playerCameraMovement>().distance = 3;
-                computerScreen.enabled = true;
+                computerScreen.SetActive(true);
             }
-            else if(Input.GetKeyUp(KeyCode.E) && computerScreen.enabled == true)
+            else if(Input.GetKeyUp(KeyCode.E) && computerScreen.activeInHierarchy == true)
             {
                 isOn = false;
                 cam.GetComponent<playerCameraMovement>().lookAt = playerHead;
-                computerScreen.enabled = false;
+                computerScreen.SetActive(false);
             }
         }
 
         if (isOn)
         {
             //computer behaviour to select levels goes here
+            interactPromptKimage.enabled = false;
         }
     }
 
@@ -52,7 +60,7 @@ public class moniterUIController : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-
+            interactPromptKimage.enabled = true;
             player = other.gameObject;
             
         }
@@ -64,10 +72,11 @@ public class moniterUIController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
+                interactPromptKimage.enabled = false;
                 //Debug.Log("interacting..");
                 //display prompts here
 
-                computerScreen.enabled = true;
+                
             }
         }
     }
@@ -76,10 +85,12 @@ public class moniterUIController : MonoBehaviour
     {
         if (player != null)
         {
-            computerScreen.enabled = false;
+            computerScreen.SetActive(false);
             cam.GetComponent<playerCameraMovement>().distance = 5;
             cam.GetComponent<playerCameraMovement>().lookAt = playerHead;
+            interactPromptKimage.enabled = false;
             player = null;
         }
     }
+
 }

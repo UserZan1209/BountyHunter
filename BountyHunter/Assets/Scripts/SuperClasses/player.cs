@@ -38,7 +38,6 @@ public class player : character
         {
             case MovementState.isPhysics:
                 myAnim.SetBool("isRagdoll", true);
-                forcePlayer();
                 break;
             case MovementState.isNotPhysics:
                 myAnim.SetBool("isRagdoll", false);
@@ -50,12 +49,6 @@ public class player : character
     protected void transformPlayer()
     {
         transform.Translate(aH * speed * Time.deltaTime, 0, aV * speed * Time.deltaTime);
-    }
-    //used to add a force upwards
-    protected void forcePlayer()
-    {
-        playerJump();
-
     }
     //jump (dosnt work at the moment)
     protected void playerJump()
@@ -168,6 +161,15 @@ public class player : character
         {
             myAnim.SetBool("isRunning", false);
 
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.visible = false;
         }
     }
 

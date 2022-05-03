@@ -15,9 +15,9 @@ public class projectileInstance : MonoBehaviour
     void Start()
     {
         Init();
-        transform.position = bulletStartPoint.transform.position;
-        transform.rotation = bulletStartPoint.transform.rotation;
-        myRb.AddForce(Vector3.forward * 50.0f);
+        //transform.position = bulletStartPoint.transform.position;
+        //transform.rotation = Camera.main.GetComponent<Transform>().rotation;
+        //myRb.AddForce(Vector3.forward * 50.0f);
         timer += 10;
     }
 
@@ -32,9 +32,9 @@ public class projectileInstance : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("Player");
         currantWeapon = player.GetComponent<playerWeaponManager>().myCurrantWeapon;
-        bulletStartPoint = currantWeapon.transform.GetChild(3).gameObject;
+        bulletStartPoint = currantWeapon.transform.GetChild(0).gameObject;
 
-//        transform.parent = null;
+        //transform.parent = null;
     }
 
     void projectileDestruction()

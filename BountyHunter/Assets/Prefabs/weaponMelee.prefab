@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 9113451452794290955}
   - component: {fileID: 9113451452794290954}
   - component: {fileID: 9113451452794290948}
+  - component: {fileID: 8578656960576354285}
   m_Layer: 0
   m_Name: weaponMelee
   m_TagString: WoneHand
@@ -113,14 +114,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 2
+  icon: {fileID: 0}
   isPickedUp: 0
+  isPlayerAttacking: 0
   player: {fileID: 0}
   myCollider: {fileID: 9113451452794290954}
   myRB: {fileID: 0}
   rightHand: {fileID: 0}
   grabPoints: []
   rHand: {fileID: 0}
-  isPlayerAttacking: 0
 --- !u!65 &9113451452794290954
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -150,6 +152,24 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &8578656960576354285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9113451452794290957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 6
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &9113451453121370261
 GameObject:
   m_ObjectHideFlags: 0

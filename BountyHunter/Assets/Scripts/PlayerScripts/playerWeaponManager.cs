@@ -33,12 +33,14 @@ public class playerWeaponManager : MonoBehaviour
     {
         if(player.gameObject.GetComponent<playerMovement>().my_ragdoll_state == character.RagdollState.isRagdoll)
         {
-            //change fuctionallity to drop the currantly held weapon
+            //change fuctionallity to drop the held weapons
             if(myCurrantWeapon != null)
             {
-                dropWeapon(myCurrantWeapon);
+                dropEverything();
             }
         }
+
+        //if player has more than one weapon player may switch weapons
         if(myMeleeWeapon != null && myRangedWeapon != null)
         {
             if (Input.GetKeyUp(KeyCode.Tab))
@@ -47,81 +49,130 @@ public class playerWeaponManager : MonoBehaviour
             }
         }
 
-        else if (myMeleeWeapon == null || myRangedWeapon == null)
-        {
-           // Debug.Log("not enough weapons to switch");
-        }
-
         weaponManager();
+
+        //drop current weapon
+        if(myCurrantWeapon != null && Input.GetKeyUp(KeyCode.G))
+        {
+            dropWeapon(myCurrantWeapon);
+            if(myRangedWeapon != null)
+            {
+                myCurrantWeapon = myRangedWeapon;
+            }
+            if(myMeleeWeapon != null)
+            {
+                myCurrantWeapon = myMeleeWeapon;
+            }
+        }
     }
     protected void OnTriggerEnter(Collider other)
     {
-        if(other.GetComponent<Weapon>() != null)
+        if(other.GetComponent<Weapon>() != null || other.GetComponent<melee>() != null)
         {
             myTargetWeapon = other.gameObject;
         }
     }
     protected void OnTriggerStay(Collider other)
     {
-        if (player.GetComponent<playerMovement>().my_ragdoll_state == character.RagdollState.isNotRagdoll && myTargetWeapon != null)
+        //get the gameobject infomation for use in the weapon manager
+        if (other.GetComponent<Weapon>() != null || other.GetComponent<melee>() != null)
         {
-            switch (other.gameObject.tag)
+            if (Input.GetKeyUp(KeyCode.E))
             {
-                case "WoneHand":
-                    if (myTargetWeapon.name == "weaponMelee" && myMeleeWeapon == null)
+                //using the target weapon this statement controls what happends when different weapons are picked up
+                if (player.GetComponent<playerMovement>().my_ragdoll_state == character.RagdollState.isNotRagdoll)
+                {
+                    switch (other.gameObject.tag)
                     {
-                        myMeleeWeapon = other.gameObject;
-                        equipOneHandedWeapon(myTargetWeapon);
-                        //Debug.Log("melee equiped");
+                        case "WoneHand":
+                            if (other.name == "weaponMelee")
+                            {
+                                myMeleeWeapon = other.gameObject;
+                                equipOneHandedWeapon(myMeleeWeapon);
+                                //Debug.Log("melee equiped");
+                            }
+                            else if (other.name == "weaponPistol")
+                            {
+                                myRangedWeapon = other.gameObject;
+                                equipOneHandedWeapon(myRangedWeapon);
+                                //Debug.Log("pistol equiped");
+                            }
+                            break;
                     }
-                    else if (myTargetWeapon.name == "weaponPistol" && myRangedWeapon == null)
-                    {
-                        myRangedWeapon = other.gameObject;
-                        equipOneHandedWeapon(myTargetWeapon);
-                        //Debug.Log("pistol equiped");
-                    }
-                    break;
+                }
             }
-        }
-        else
-        {
-            //Debug.Log("cannot interact while in a ragdoll");
         }
 
     }
     protected void OnTriggerExit(Collider other)
     {
+        //empties the target weapon container for use when the player encounters another weapon
+        
         if(myTargetWeapon != null)
         {
-            myTargetWeapon = null;
+           
+           // myTargetWeapon = null;
         }
     }
 
     protected void equipOneHandedWeapon(GameObject cWeapon)
     {
-        myTargetWeapon.GetComponent<Weapon>().rightHand = myRightHand;
+        bool pickedUp = cWeapon.GetComponent<Weapon>().isPickedUp;
+        //to prevent the player stuck in a constant state of picking up the same weapon the statement checks if the weapon is picked up
+        if (!pickedUp)
+        {
+            //passes through the infomation for the players right hand
+            if (cWeapon.GetComponent<Weapon>()!= null){
+                cWeapon.GetComponent<Weapon>().rightHand = myRightHand;
+            }
+            if (cWeapon.GetComponent<melee>() != null)
+            {
+                cWeapon.GetComponent<melee>().rightHand = myRightHand;
+            }
 
-        if (myTargetWeapon.GetComponent<Weapon>().isPickedUp != true)
-        { 
+
+            //set the currantweapon to the new target weapon
             if (myCurrantWeapon == null)
             {
-                myCurrantWeapon = myTargetWeapon.gameObject;
+                //sets the currant weapon to be the picked up weapon
+                myCurrantWeapon = cWeapon.gameObject;
                 myCurrantWeapon.GetComponent<Weapon>().setHand(myRightHand);
-
                 myTargetWeapon.gameObject.transform.SetParent(myRightHand.transform);
             }
             else
             {
+                myTargetWeapon = cWeapon;
+                myCurrantWeapon = myTargetWeapon;
                 myTargetWeapon.GetComponent<Weapon>().setHand(myRightHand);
                 myTargetWeapon.gameObject.transform.SetParent(myRightHand.transform);
-                myCurrantWeapon.SetActive(false);
-                myCurrantWeapon = myTargetWeapon;
+                myTargetWeapon.transform.rotation = myRightHand.transform.rotation;
+                //logic used when picking up a second weapon / replacing a weapon
+                switch (cWeapon.gameObject.name)
+                {
+                    //drop and replace weapon
+                    case "weaponMelee":
+                        if (myCurrantWeapon.name == cWeapon.name)
+                        {
+                            //if the new weapon is a melee weapon, drop melee item
+                            dropWeapon(myCurrantWeapon);
+                        }
+                        break;
+                    case "weaponPistol":
+                        if(myCurrantWeapon.name == cWeapon.name)
+                        {
+                            dropWeapon(myCurrantWeapon);
+                        }
+                        break;
+                }
+
+                equipOneHandedWeapon(cWeapon);
+
             }
 
             myTargetWeapon.GetComponent<Weapon>().isPickedUp = true;
         }
 
-        myCurrantWeapon.SetActive(true);
+        
     }
 
     protected void dropWeapon(GameObject cWeapon)
@@ -163,11 +214,11 @@ public class playerWeaponManager : MonoBehaviour
 
     protected void swapWeapon()
     {
-        if(myCurrantWeapon.gameObject == myRangedWeapon)
+        if(myCurrantWeapon == myRangedWeapon)
         {
             myCurrantWeapon = myMeleeWeapon;
         }
-        else if(myCurrantWeapon.gameObject == myCurrantWeapon)
+        else if(myCurrantWeapon == myMeleeWeapon)
         {
             myCurrantWeapon = myRangedWeapon;
         }

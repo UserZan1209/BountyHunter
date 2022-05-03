@@ -10,15 +10,20 @@ public class EnemyController : Enemy
     [SerializeField] private GameObject player;
 
     [SerializeField] private Image healthBar;
+    [SerializeField] private Image staminaBar;
 
     protected enum AImode { def ,melee, ranged}
     [SerializeField] protected AImode AIMode = AImode.def;
 
     [SerializeField] protected GameObject weapon;
+
+    [SerializeField] protected float timer2;
+    [SerializeField] protected bool waitingForWakeUp;
     // Start is called before the first frame update
     void Start()
     {
         InitMe();
+        waitingForWakeUp = false;
 
         if(weapon == null || weapon.gameObject.name == "weaponMelee")
         {
@@ -42,6 +47,11 @@ public class EnemyController : Enemy
         enableDisableRagdoll();
         moveToPlayer();
 
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            useStamina(10.0f);
+        }
+
 
     }
 
@@ -53,6 +63,31 @@ public class EnemyController : Enemy
             toggleRagdoll();
             my_life_state = LifeState.isdead;
             player.GetComponent<playerProgressionn>().increaseExpAmount(baseExp);
+        }
+
+        if(stamina < maxstamina)
+        {
+            stamina += Time.deltaTime * 10.0f;
+            staminaBar.GetComponent<Image>().fillAmount = stamina / 100;
+        }
+        if(stamina <= 0)
+        {
+            toggleRagdoll();
+            timer2 += 5.0f;
+            
+            stamina = 30.0f;
+            waitingForWakeUp = true;
+        }
+
+        if (waitingForWakeUp)
+        {
+            agent.SetDestination(transform.position);
+            timer2 -= Time.deltaTime;
+            if(timer2 <= 0)
+            {
+                toggleRagdoll();
+                waitingForWakeUp = false;
+            }
         }
     }
 
@@ -83,15 +118,17 @@ public class EnemyController : Enemy
             // add a condition for weapons and use this as the default when ammo is depleted or no 
             // weapon is equiped.
             float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-            //print(distanceToPlayer);
 
             switch (AIMode)
             {
                 case AImode.melee:
                     if (distanceToPlayer < 10.0f && distanceToPlayer > 1.0f)
                     {
-                        agent.SetDestination(player.transform.position);
-                        meleeCombat();
+                        if (!waitingForWakeUp)
+                        {
+                            agent.SetDestination(player.transform.position);
+                            meleeCombat();
+                        }
                     }
                     break;
                 case AImode.ranged:
@@ -114,9 +151,24 @@ public class EnemyController : Enemy
         healthBar.GetComponent<Image>().fillAmount = health/10;
     }
 
+    public void useStamina(float s)
+    {
+        stamina -= s;
+        staminaBar.GetComponent<Image>().fillAmount = stamina / 100;
+    }
+
     protected void meleeCombat()
     {
-
+        float timer = 0;
+        if(timer < 0)
+        {
+            print("attacking player");
+            timer += 4.5f;
+        }
+        else
+        {
+            timer -= Time.deltaTime;
+        }
     }
 
     protected void rangedCombat()

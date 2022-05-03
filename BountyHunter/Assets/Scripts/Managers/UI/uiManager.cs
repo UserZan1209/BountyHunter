@@ -12,12 +12,26 @@ public class uiManager : MonoBehaviour
     [SerializeField] protected Image expBar;
     [SerializeField] protected Image healthBar;
     [SerializeField] protected Image staminaBar;
+    [SerializeField] public Image ammoBar;
+
+    [SerializeField] protected Image icon;
+
+    //Ui level display
+    [SerializeField] protected Text levelText;
+    [SerializeField] protected Text magazinesText;
+
+    [SerializeField] protected GameObject bottomLeftUI;
+
+
+    //NPC interface
+    [SerializeField] protected GameObject NPCUI;
 
     // Start is called before the first frame update
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-
+        bottomLeftUI.SetActive(false);
+        //NPCUI.SetActive(false);
         
     }
 
@@ -30,6 +44,12 @@ public class uiManager : MonoBehaviour
         calculateExpBar();
         calculateHealthBar();
         calculateStaminaBar();
+        displayLevelToUI();
+    }
+
+    void displayLevelToUI()
+    {
+        levelText.text = player.GetComponent<playerProgressionn>().level.ToString();
     }
 
     void calculateExpBar()
@@ -53,5 +73,35 @@ public class uiManager : MonoBehaviour
         float stamina = player.GetComponent<playerMovement>().stamina;
 
         staminaBar.fillAmount = stamina / 100;
+    }
+
+    public void updateWeaponUI(int maxAmmo, int curAmmo, int curClips, Sprite weaponIcon)
+    {
+        //display currant ammo
+        float multplyer = 100.0f / maxAmmo;
+        ammoBar.fillAmount = (curAmmo * multplyer) / 100.0f;
+        if(ammoBar.fillAmount <= 0.3f)
+        {
+            ammoBar.color = Color.red;
+        }
+        else
+        {
+            ammoBar.color = Color.white;
+        }
+        
+
+        //display currant magazines
+        magazinesText.text = curClips.ToString();
+        icon.sprite = weaponIcon;
+        bottomLeftUI.SetActive(true);
+    }
+
+    //criteria
+    //npc ui
+    //trigger on and off
+
+    void enableDisableNPCUI()
+    {
+
     }
 }
