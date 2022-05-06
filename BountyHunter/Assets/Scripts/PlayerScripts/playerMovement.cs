@@ -11,6 +11,7 @@ public class playerMovement : player
     [SerializeField] public Transform Cam;
     [SerializeField] protected playerWeaponManager weaponManager;
     [SerializeField] protected Camera cameraRef;
+    [SerializeField] public bool canRotate;
     protected string[] attackChecks = { "animPunch", "animAttack" };
 
     public enum playerControlMethod { controller, keyboard }
@@ -24,6 +25,7 @@ public class playerMovement : player
         cameraRef = Camera.main;
         defaultFov = cameraRef.fieldOfView;
         aimingFov = defaultFov += 10.0f;
+        canRotate = true;
     }
     private void Update()
     {
@@ -96,27 +98,29 @@ public class playerMovement : player
     }
     private void cameraController()
     {
-        //allows the camera to control the rotation of the player
-        float Horizontal = Input.GetAxis("Horizontal") * Speed * Time.deltaTime;
-        float Vertical = Input.GetAxis("Vertical") * Speed * Time.deltaTime;
-
-        Vector3 Movement = Cam.transform.right * Horizontal + Cam.transform.forward * Vertical;
-        Movement.y = 0f;
-
-        if (Movement.magnitude != 0f)
+        if (canRotate)
         {
-            transform.Rotate(Vector3.up * Input.GetAxis("Mouse X") * Cam.GetComponent<playerCameraMovement>().sensivity * Time.deltaTime);
+            //allows the camera to control the rotation of the player
+            float Horizontal = Input.GetAxis("Horizontal") * Speed * Time.deltaTime;
+            float Vertical = Input.GetAxis("Vertical") * Speed * Time.deltaTime;
 
-            Quaternion CamRotation = Cam.rotation;
-            CamRotation.x = 0f;
-            CamRotation.z = 0f;
+            Vector3 Movement = Cam.transform.right * Horizontal + Cam.transform.forward * Vertical;
+            Movement.y = 0f;
 
-            transform.rotation = Quaternion.Lerp(transform.rotation, CamRotation, 0.1f);
+            if (Movement.magnitude != 0f)
+            {
+                transform.Rotate(Vector3.up * Input.GetAxis("Mouse X") * Cam.GetComponent<playerCameraMovement>().sensivity * Time.deltaTime);
+
+                Quaternion CamRotation = Cam.rotation;
+                CamRotation.x = 0f;
+                CamRotation.z = 0f;
+
+                transform.rotation = Quaternion.Lerp(transform.rotation, CamRotation, 0.1f);
+            }
+
+            myGameObject.transform.eulerAngles = new Vector3(Cam.transform.rotation.x, myGameObject.transform.rotation.y, myGameObject.transform.rotation.z);
+
         }
-
-        myGameObject.transform.eulerAngles = new Vector3(Cam.transform.rotation.x, myGameObject.transform.rotation.y, myGameObject.transform.rotation.z);
-
-
     }
 
     public void healPlayer(float h)

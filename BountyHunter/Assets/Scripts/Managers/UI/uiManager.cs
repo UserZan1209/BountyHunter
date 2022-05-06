@@ -5,53 +5,64 @@ using UnityEngine.UI;
 
 public class uiManager : MonoBehaviour
 {
+    //References
     [SerializeField] protected GameObject player;
-    [SerializeField] private Text uiHealthText;
-
+    [Space]
+    //Main UI variables
+    [SerializeField] protected Text magazinesText;
+    [SerializeField] protected GameObject bottomLeftUI;
+    [Space]
     //UI bars
     [SerializeField] protected Image expBar;
     [SerializeField] protected Image healthBar;
     [SerializeField] protected Image staminaBar;
     [SerializeField] public Image ammoBar;
-
     [SerializeField] protected Image icon;
-
-    //Ui level display
-    [SerializeField] protected Text levelText;
-    [SerializeField] protected Text magazinesText;
-
-    [SerializeField] protected GameObject bottomLeftUI;
-
+    [Space]
 
     //NPC interface
     [SerializeField] protected GameObject NPCUI;
+    [SerializeField] protected GameObject NPCObject;
+    [SerializeField] protected Button startQuestButton;
+    //NPC sub menus
+    [SerializeField] protected GameObject questMenu;
+    //quest components
+    [SerializeField] protected Text questName;
+    [SerializeField] protected GameObject shopMenu;
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-        bottomLeftUI.SetActive(false);
-        //NPCUI.SetActive(false);
-        
+        initMe();
     }
 
     // Update is called once per frame
     void Update()
     {
-        uiHealthText.text = player.gameObject.GetComponent<playerMovement>().health.ToString();
-
-        //change these functions to be triggered by other objects
         calculateExpBar();
         calculateHealthBar();
         calculateStaminaBar();
-        displayLevelToUI();
     }
 
-    void displayLevelToUI()
+    private void initMe()
     {
-        levelText.text = player.GetComponent<playerProgressionn>().level.ToString();
-    }
+        player = GameObject.FindGameObjectWithTag("Player");
+        //close projectile weapon section of UI
+        bottomLeftUI.SetActive(false);
+        //Close npc sub menus
+        questMenu.SetActive(false);
+        shopMenu.SetActive(false);
+        //Close all npc menu
+        NPCUI.SetActive(false);
 
+        //listen to events
+        gameEvents.openNpcMenu += openNPCUI;
+        gameEvents.closeNpcMenu += closeNPCUI;
+        gameEvents.sendInfo += infoFromNPC;
+
+        //startQuestButton.onClick = NPCObject
+    }
     void calculateExpBar()
     {
         float xpThisLevel = player.GetComponent<playerProgressionn>().XPthisLevel;
@@ -59,6 +70,7 @@ public class uiManager : MonoBehaviour
 
         float multiplyer = (100 / xpReqthisLevel);
         expBar.fillAmount = (xpThisLevel * multiplyer) / 100.0f;
+        
     }
 
     void calculateHealthBar()
@@ -96,12 +108,52 @@ public class uiManager : MonoBehaviour
         bottomLeftUI.SetActive(true);
     }
 
-    //criteria
-    //npc ui
-    //trigger on and off
-
-    void enableDisableNPCUI()
+    //open and close the NPC section of the UI
+    public void openNPCUI()
     {
+        NPCUI.SetActive(true);
+    }
+    public void closeNPCUI()
+    {
+        //close quest and shop menus so they are closed upon reinteraction
+        questMenu.SetActive(false);
+        shopMenu.SetActive(false); 
+        NPCUI.SetActive(false);
+    }
 
+    //open and close the Quest section of the NPC UI
+    public void openNPCUI_Quest()
+    {
+        shopMenu.SetActive(false);
+        questMenu.SetActive(true);
+    }
+    public void closeNPCUI_Quest()
+    {
+        questMenu.SetActive(false);
+    }
+
+    //Accepting quest from the NPC
+    public void acceptNPCQuest()
+    {
+        gameEvents.current.startNPCQuest();
+        questMenu.SetActive(false);
+    }
+
+    //retrive Info from NPC
+    public void infoFromNPC()
+    {
+        print(gameEvents.current.questName);
+        questName.text = gameEvents.current.questName;
+    }
+    //open and close the Shop section of the NPC UI
+    public void openNPCUI_Shop()
+    {
+        //NOTE load all shop data and level reqiurement for items here
+        questMenu.SetActive(false);
+        shopMenu.SetActive(true);
+    }
+    public void closeNPCUI_Shop()
+    {
+        shopMenu.SetActive(false);
     }
 }

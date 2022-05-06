@@ -9,6 +9,7 @@ TagManager:
   - grabPoint
   - gameManager
   - WoneHand
+  - NPC
   layers:
   - Default
   - TransparentFX

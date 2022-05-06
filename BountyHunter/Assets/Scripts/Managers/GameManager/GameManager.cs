@@ -17,9 +17,4 @@ public class GameManager : Manager
         
     }
 
-    public void killTarget()
-    {
-        isTargetAlive = false;
-        Debug.Log("Target has been killed");
-    }
 }

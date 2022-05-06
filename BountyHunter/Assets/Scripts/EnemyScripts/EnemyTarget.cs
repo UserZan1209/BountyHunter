@@ -12,9 +12,11 @@ public class EnemyTarget : EnemyController
     bool isTargetAlive = true;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        gameManager = GameObject.FindGameObjectWithTag("gameManager");
+        gameManager = gameEvents.current.gameObject;
+        gameEvents.onTargetDeath += onTargetDeath;
+
         AIMode = AImode.ranged;
 
         if(gameManager == null)
@@ -28,21 +30,19 @@ public class EnemyTarget : EnemyController
     {
         if(health <= 0 && isTargetAlive)
         {
-            gameManager.GetComponent<GameManager>().killTarget();
             this.GetComponent<Animator>().enabled = false;
             timer += 10.0f;
-
             isTargetAlive = false;
         }
 
         if(timer < 0.5f && !isTargetAlive)
         {
-            SceneManager.LoadScene(nextSceneToLoad);
+            //Loads next scene
+            gameEvents.current.targetDeath();
         }
         else if(timer >= 0.5f && !isTargetAlive)
         {
             timer -= Time.deltaTime;
-            //Debug.Log(timer);
         }
         checkForRagdoll();
         moveToPlayer();
@@ -51,5 +51,10 @@ public class EnemyTarget : EnemyController
     override public void takeDamage(float d)
     {
         health -= d;
+    }
+
+    protected void onTargetDeath()
+    {
+        SceneManager.LoadScene(nextSceneToLoad);
     }
 }

@@ -602,7 +602,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 560931967}
   m_LocalRotation: {x: -0.000000007450581, y: 1, z: -0.000000007450581, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 12.800008}
+  m_LocalPosition: {x: 0, y: 0, z: 27.1}
   m_LocalScale: {x: 0.326912, y: 0.3203944, z: 0.28356}
   m_Children:
   - {fileID: 1968857101}
@@ -611,7 +611,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -38.39296, y: -38.86857}
+  m_AnchoredPosition: {x: -22.5, y: -38.9}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &560931969
@@ -658,13 +658,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1008166127}
+        m_TargetAssemblyTypeName: moniterUIController, Assembly-CSharp
+        m_MethodName: loadLevel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1214,6 +1214,7 @@ GameObject:
   - component: {fileID: 1008166125}
   - component: {fileID: 1008166126}
   - component: {fileID: 1008166127}
+  - component: {fileID: 1008166128}
   m_Layer: 0
   m_Name: Laptop
   m_TagString: Untagged
@@ -1264,6 +1265,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   cam: {fileID: 0}
+  defSensitivity: 0
   playerHead: {fileID: 0}
   computerScreen: {fileID: 776779444}
   computerCanvas: {fileID: 1918834199}
@@ -1271,6 +1273,24 @@ MonoBehaviour:
   interactPromptKimage: {fileID: 1301547808}
   interactPromptK: {fileID: 21300000, guid: ee9c27a765efe9549959e27d0a73e8eb, type: 3}
   interactPromptC: {fileID: 0}
+--- !u!114 &1008166128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1008166124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 1
+  outlineColor: {r: 0, g: 0, b: 0, a: 1}
+  outlineWidth: 6
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!4 &1179537012 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6271599131576078019, guid: 5035e1b0fdc9df34aaed7a9e2c5a7ec6, type: 3}

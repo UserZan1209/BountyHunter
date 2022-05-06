@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class moniterUIController : MonoBehaviour
 {
     [SerializeField] private GameObject player;
     [SerializeField] private Camera cam;
+    [SerializeField] private float defSensitivity;
     [SerializeField] private Transform playerHead;
 
     [SerializeField] public GameObject computerScreen;
@@ -26,6 +28,7 @@ public class moniterUIController : MonoBehaviour
         computerScreen.SetActive(false);
         cam = Camera.main;
         playerHead = cam.GetComponent<playerCameraMovement>().lookAt;
+        defSensitivity = cam.GetComponent<playerCameraMovement>().sensivity;
 
     }
 
@@ -40,12 +43,18 @@ public class moniterUIController : MonoBehaviour
                 cam.GetComponent<playerCameraMovement>().lookAt = computerScreen.transform;
                 cam.GetComponent<playerCameraMovement>().distance = 3;
                 computerScreen.SetActive(true);
+                player.GetComponent<playerMovement>().canRotate = false;
+                cam.GetComponent<playerCameraMovement>().sensivity = 0;
+                Cursor.visible = true;
             }
             else if(Input.GetKeyUp(KeyCode.E) && computerScreen.activeInHierarchy == true)
             {
                 isOn = false;
                 cam.GetComponent<playerCameraMovement>().lookAt = playerHead;
                 computerScreen.SetActive(false);
+                player.GetComponent<playerMovement>().canRotate = true;
+                cam.GetComponent<playerCameraMovement>().sensivity = defSensitivity;
+                Cursor.visible = false;
             }
         }
 
@@ -93,4 +102,8 @@ public class moniterUIController : MonoBehaviour
         }
     }
 
+    public void loadLevel()
+    {
+        SceneManager.LoadScene("S_LevelOne");
+    }
 }

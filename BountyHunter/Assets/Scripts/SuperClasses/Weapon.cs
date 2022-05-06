@@ -9,6 +9,8 @@ public class Weapon : MonoBehaviour
     [HeaderAttribute("Variables")]
     [SerializeField] public float damage;
     [SerializeField] public Sprite icon;
+    [SerializeField] public Image myImagePrompt;
+    [SerializeField] public Sprite myPromptSprite;
     [SerializeField] public bool isPickedUp = false;
     [SerializeField] protected bool isPlayerAttacking;
     protected Camera cam;
@@ -20,6 +22,12 @@ public class Weapon : MonoBehaviour
     [SerializeField] public GameObject rightHand;
     [SerializeField] public GameObject[] grabPoints;
     [SerializeField] protected GameObject rHand;
+    [SerializeField] protected GameObject weaponObject;
+
+    [SerializeField] public GameObject[] myWeaponChoices;
+
+    protected enum weaponTeir { basic, good, great, best}
+    [SerializeField] protected weaponTeir myWeaponTeir;
 
 
     protected void Start()
@@ -28,6 +36,13 @@ public class Weapon : MonoBehaviour
         grabPoints = GameObject.FindGameObjectsWithTag("grabPoint");
         myRB = this.gameObject.GetComponent<Rigidbody>();
         cam = Camera.main;
+
+        //change to enable disable the canvas
+        myImagePrompt.enabled = false;
+
+        //random weapon and tier
+        myWeaponTeir = weaponTeir.basic;
+        weaponObject = myWeaponChoices[1];
     }
 
     protected void FixedUpdate()
@@ -45,10 +60,18 @@ public class Weapon : MonoBehaviour
         }
 
         //responsible for informing the weapon where the gameobject for the right hand is located
-        if (other.gameObject.name == "mixamorig:RightHand")
+        if (other.gameObject.tag == "Player")
         {
-            rHand = other.gameObject;
-            Debug.Log(gameObject.name + " has detected the players hand");
+            myImagePrompt.enabled = true;
+            myImagePrompt.sprite = myPromptSprite;
+        }
+    }
+
+    protected void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            myImagePrompt.enabled = false;
         }
     }
 
@@ -57,6 +80,7 @@ public class Weapon : MonoBehaviour
         if (isPickedUp)
         {
             myRB.isKinematic = true;
+            myImagePrompt.enabled = false;
             if (rightHand != null)
             {
                 transform.position = rightHand.transform.position;

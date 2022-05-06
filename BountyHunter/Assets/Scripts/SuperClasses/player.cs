@@ -116,7 +116,7 @@ public class player : character
         {
             myAnim.SetTrigger("x/square");
             isAttacking = true;
-            stamina -= 20.0f;
+            stamina -= 5.0f;
         }
         else
         {
@@ -127,7 +127,7 @@ public class player : character
         {
             myAnim.SetTrigger("y/triangle");
             isAttacking = true;
-            stamina -= 35.0f;
+            stamina -= 15.0f;
         }
         else
         {
