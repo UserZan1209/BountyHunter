@@ -11,6 +11,9 @@ public class NPCController : MonoBehaviour
     [SerializeField] protected Canvas myCanvas;
     [SerializeField] protected Image myPromptImage;
     [SerializeField] protected Sprite mySpritePrompt;
+
+    //text box
+    [SerializeField] protected string[] dialogue = new string[0];
     //*inventory system using gameobject prefabs
 
     [SerializeField] protected bool isInteracting;
@@ -26,9 +29,14 @@ public class NPCController : MonoBehaviour
         myPromptImage.sprite = mySpritePrompt;
         myCanvas.enabled = false;
         gameEvents.startQuest += startQuest;
-        
+        gameEvents.completeQuest += endQuest;
+        gameEvents.spawnReward += spawnReward;
+       
     }
+    private void Update()
+    {
 
+    }
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.tag == "Player")
@@ -39,13 +47,12 @@ public class NPCController : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        //use the iscompleted it collect reward
         if (other.tag == "Player")
         {
             myCanvas.enabled = true;
-            print("a");
-            if (Input.GetKeyUp(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E))
             {
-                print("b");
                 gameEvents.current.openNPCMenu();
                 isInteracting = false;
             }
@@ -62,11 +69,25 @@ public class NPCController : MonoBehaviour
 
     private void sendInfo()
     {
-        gameEvents.current.sendNPCinfo("s");
+        gameEvents.current.sendNPCinfo(quest, dialogue);
     }
 
     private void startQuest()
     {
         quest.isActive = true;    
+    }
+
+    private void endQuest()
+    {
+        quest.isCompleted = true;
+        quest.isActive = false;
+        //spawn prefab
+    }
+
+    private void spawnReward()
+    {
+        //spawn quest.item
+        Instantiate(quest.itemGained, gameObject.transform.position, Quaternion.identity);
+        Debug.Log("item spawned");
     }
 }

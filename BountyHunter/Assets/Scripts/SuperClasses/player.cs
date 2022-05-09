@@ -112,11 +112,17 @@ public class player : character
 
     protected void inputActions()
     {
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            gameEvents.current.togglePauseMenu();
+        }
+
         if (Input.GetButtonUp("X/Square") || Input.GetKeyUp(KeyCode.Q))
         {
             myAnim.SetTrigger("x/square");
             isAttacking = true;
             stamina -= 5.0f;
+            gameEvents.current.updateStamina(stamina);
         }
         else
         {
@@ -128,6 +134,7 @@ public class player : character
             myAnim.SetTrigger("y/triangle");
             isAttacking = true;
             stamina -= 15.0f;
+            gameEvents.current.updateStamina(stamina);
         }
         else
         {
@@ -163,14 +170,6 @@ public class player : character
 
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Cursor.visible = true;
-        }
-        else
-        {
-            Cursor.visible = false;
-        }
     }
 
 }

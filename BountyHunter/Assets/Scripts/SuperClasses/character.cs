@@ -43,17 +43,20 @@ public abstract class character : MonoBehaviour
 
     protected virtual void toggleRagdoll()
     {
-        myAnim.enabled = !myAnim.enabled;
+        if(myAnim != null)
+        {
+            myAnim.enabled = !myAnim.enabled;
 
-        if (myAnim.enabled == false)
-        {
-            my_ragdoll_state = RagdollState.isRagdoll;
-            my_movement_state = MovementState.isPhysics;
-        }
-        else if (myAnim.enabled == true)
-        {
-            my_ragdoll_state = RagdollState.isNotRagdoll;
-            my_movement_state = MovementState.isNotPhysics;
+            if (myAnim.enabled == false)
+            {
+                my_ragdoll_state = RagdollState.isRagdoll;
+                my_movement_state = MovementState.isPhysics;
+            }
+            else if (myAnim.enabled == true)
+            {
+                my_ragdoll_state = RagdollState.isNotRagdoll;
+                my_movement_state = MovementState.isNotPhysics;
+            }
         }
     }
 }

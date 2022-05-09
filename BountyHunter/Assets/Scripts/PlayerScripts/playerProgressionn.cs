@@ -12,7 +12,18 @@ public class playerProgressionn : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        level = 1;
+        if(gameEvents.current.recentSaveData != null)
+        {
+            SaveData sD = gameEvents.current.recentSaveData;
+            level = sD.level;
+
+            gameEvents.current.changeLevelUI();
+        }
+        else
+        {
+            level = 1;
+        }
+       
         calculateReqExp();
     }
 
@@ -33,6 +44,12 @@ public class playerProgressionn : MonoBehaviour
             level++;
             //checks how much exp will be needed for the next level
             calculateReqExp();
+            gameEvents.current.changeLevelUI();
+        }
+
+        if (Input.GetKeyUp(KeyCode.KeypadEnter))
+        {
+            increaseExpAmount(10);
         }
     }
 

@@ -32,7 +32,7 @@ public class projectileInstance : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("Player");
         currantWeapon = player.GetComponent<playerWeaponManager>().myCurrantWeapon;
-        bulletStartPoint = currantWeapon.transform.GetChild(0).gameObject;
+        
 
         //transform.parent = null;
     }

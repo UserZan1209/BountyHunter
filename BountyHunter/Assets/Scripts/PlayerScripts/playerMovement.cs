@@ -21,11 +21,18 @@ public class playerMovement : player
     private void Start()
     {
         InitMe();
+
+        gameEvents.current.setPlayer(this.gameObject);
+
         weaponManager = this.gameObject.GetComponent<playerWeaponManager>();
         cameraRef = Camera.main;
         defaultFov = cameraRef.fieldOfView;
         aimingFov = defaultFov += 10.0f;
         canRotate = true;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        gameEvents.current.updateHealth(health);
+        gameEvents.current.updateStamina(stamina);
     }
     private void Update()
     {
@@ -39,7 +46,8 @@ public class playerMovement : player
             
             if(my_ragdoll_state != RagdollState.isRagdoll && stamina < 100.0f)
             {
-                stamina += Time.deltaTime * 2.5f;
+                stamina += Time.deltaTime * 4.5f;
+                gameEvents.current.updateStamina(stamina);
             }
             
         }
@@ -100,25 +108,34 @@ public class playerMovement : player
     {
         if (canRotate)
         {
-            //allows the camera to control the rotation of the player
-            float Horizontal = Input.GetAxis("Horizontal") * Speed * Time.deltaTime;
-            float Vertical = Input.GetAxis("Vertical") * Speed * Time.deltaTime;
-
-            Vector3 Movement = Cam.transform.right * Horizontal + Cam.transform.forward * Vertical;
-            Movement.y = 0f;
-
-            if (Movement.magnitude != 0f)
+            if(Cam != null)
             {
-                transform.Rotate(Vector3.up * Input.GetAxis("Mouse X") * Cam.GetComponent<playerCameraMovement>().sensivity * Time.deltaTime);
+                //allows the camera to control the rotation of the player
+                float Horizontal = Input.GetAxis("Horizontal") * Speed * Time.deltaTime;
+                float Vertical = Input.GetAxis("Vertical") * Speed * Time.deltaTime;
 
-                Quaternion CamRotation = Cam.rotation;
-                CamRotation.x = 0f;
-                CamRotation.z = 0f;
+                Vector3 Movement = Cam.transform.right * Horizontal + Cam.transform.forward * Vertical;
+                Movement.y = 0f;
 
-                transform.rotation = Quaternion.Lerp(transform.rotation, CamRotation, 0.1f);
+                if (Movement.magnitude != 0f)
+                {
+                    transform.Rotate(Vector3.up * Input.GetAxis("Mouse X") * Cam.GetComponent<playerCameraMovement>().sensivity * Time.deltaTime);
+
+                    Quaternion CamRotation = Cam.rotation;
+                    CamRotation.x = 0f;
+                    CamRotation.z = 0f;
+
+                    transform.rotation = Quaternion.Lerp(transform.rotation, CamRotation, 0.1f);
+                }
+
+                myGameObject.transform.eulerAngles = new Vector3(Cam.transform.rotation.x, myGameObject.transform.rotation.y, myGameObject.transform.rotation.z);
+
             }
-
-            myGameObject.transform.eulerAngles = new Vector3(Cam.transform.rotation.x, myGameObject.transform.rotation.y, myGameObject.transform.rotation.z);
+            else
+            {
+                Cam = Camera.main.transform;
+                //Debug.Log("Camera added to references");
+            }
 
         }
     }
@@ -126,5 +143,6 @@ public class playerMovement : player
     public void healPlayer(float h)
     {
         health += h;
+        gameEvents.current.updateHealth(health);
     }
 }

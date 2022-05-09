@@ -8,9 +8,9 @@ public class playerWeaponManager : MonoBehaviour
     [SerializeField] protected GameObject myRightHand;
 
     [Header("My Weapons")]
-    [SerializeField] protected GameObject myMeleeWeapon;
-    [SerializeField] protected GameObject myRangedWeapon;
-    [SerializeField] protected GameObject myFists;
+    [SerializeField] public GameObject myMeleeWeapon;
+    [SerializeField] public GameObject myRangedWeapon;
+    [SerializeField] public GameObject myFists;
 
     [SerializeField] public GameObject myCurrantWeapon;
 
@@ -19,6 +19,7 @@ public class playerWeaponManager : MonoBehaviour
     [Header("my References")]
     [SerializeField] private GameObject player;
     [SerializeField] protected playerMovement playerMovementRef;
+    [SerializeField] protected GameObject weaponUI;
 
     
     // Start is called before the first frame update
@@ -26,6 +27,8 @@ public class playerWeaponManager : MonoBehaviour
     {
         player = this.gameObject;
         playerMovementRef = this.gameObject.GetComponent<playerMovement>();
+
+        weaponUI = gameEvents.current.bottomUI;
     }
 
     // Update is called once per frame
@@ -67,7 +70,7 @@ public class playerWeaponManager : MonoBehaviour
     }
     protected void OnTriggerEnter(Collider other)
     {
-        if(other.GetComponent<Weapon>() != null || other.GetComponent<melee>() != null)
+        if(other.GetComponent<Weapon>() != null)
         {
             myTargetWeapon = other.gameObject;
         }
@@ -75,30 +78,24 @@ public class playerWeaponManager : MonoBehaviour
     protected void OnTriggerStay(Collider other)
     {
         //get the gameobject infomation for use in the weapon manager
-        if (other.GetComponent<Weapon>() != null || other.GetComponent<melee>() != null)
+        if (myTargetWeapon != null)
         {
-            if (Input.GetKeyUp(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("Y/Triangle"))
             {
-                //using the target weapon this statement controls what happends when different weapons are picked up
-                if (player.GetComponent<playerMovement>().my_ragdoll_state == character.RagdollState.isNotRagdoll)
+                if (other.name == "WeaponGrabPoint" && other.gameObject == myTargetWeapon.gameObject)
                 {
-                    switch (other.gameObject.tag)
-                    {
-                        case "WoneHand":
-                            if (other.name == "weaponMelee")
-                            {
-                                myMeleeWeapon = other.gameObject;
-                                equipOneHandedWeapon(myMeleeWeapon);
-                                //Debug.Log("melee equiped");
-                            }
-                            else if (other.name == "weaponPistol")
-                            {
-                                myRangedWeapon = other.gameObject;
-                                equipOneHandedWeapon(myRangedWeapon);
-                                //Debug.Log("pistol equiped");
-                            }
-                            break;
-                    }
+                    print("b");
+                    myMeleeWeapon = other.gameObject;
+                    equipOneHandedWeapon(myMeleeWeapon);
+                    //Debug.Log("melee equiped");
+                }
+                else if (other.name == "weaponPistol" && other.gameObject == myTargetWeapon.gameObject)
+                {
+                    myRangedWeapon = other.gameObject;
+                    equipOneHandedWeapon(myRangedWeapon);
+                    weaponUI.SetActive(true);
+                    myRangedWeapon.GetComponent<pistol>().updateUI();
+                    //Debug.Log("pistol equiped");
                 }
             }
         }
@@ -106,12 +103,13 @@ public class playerWeaponManager : MonoBehaviour
     }
     protected void OnTriggerExit(Collider other)
     {
-        //empties the target weapon container for use when the player encounters another weapon
-        
+        //empties the target weapon container for use when the player encounters another 
         if(myTargetWeapon != null)
         {
-           
-           // myTargetWeapon = null;
+            if (other.gameObject == myTargetWeapon.gameObject)
+            {
+                myTargetWeapon = null;
+            }
         }
     }
 
@@ -187,6 +185,7 @@ public class playerWeaponManager : MonoBehaviour
                 break;
             case "weaponPistol":
                 myRangedWeapon = null;
+                weaponUI.SetActive(false);
                 break;
         }
 
@@ -195,6 +194,8 @@ public class playerWeaponManager : MonoBehaviour
         myCurrantWeapon.GetComponent<Weapon>().nullHand();
         myCurrantWeapon.transform.parent = null;
         myCurrantWeapon = null;
+
+
     }
 
     public void dropEverything()
@@ -217,10 +218,14 @@ public class playerWeaponManager : MonoBehaviour
         if(myCurrantWeapon == myRangedWeapon)
         {
             myCurrantWeapon = myMeleeWeapon;
+            weaponUI.SetActive(false);
+
         }
         else if(myCurrantWeapon == myMeleeWeapon)
         {
             myCurrantWeapon = myRangedWeapon;
+            weaponUI.SetActive(true);
+
         }
 
 

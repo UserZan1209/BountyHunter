@@ -9,34 +9,45 @@ public class projectileWeapons : Weapon
     [SerializeField] protected Canvas uiCanvas;
 
     [SerializeField] protected GameObject bulletStartObj;
+    [SerializeField] protected GameObject UIobject;
 
     [SerializeField] protected int maxCurrantMagazine;
     [SerializeField] protected int currantMagazineAmmo;
-    [SerializeField] protected int remainingMagazines;
+    [SerializeField] public int remainingMagazines;
+
+    [SerializeField] protected Camera cam;
 
     //used for the delay while reloading
     [SerializeField]protected float timer;
-   
+    private void Awake()
+    {
+        UIobject = gameEvents.current.mainUIContainer;
+    }
     private void Update()
     {
-       
+        
         //checks if the weapon has been picked up and prevents shooting when all magazines are empty
         if (isPickedUp)
         {
-            updateUI();
+            
             if(timer > 0)
             {
                 timer -= Time.deltaTime;
-                uiCanvas.GetComponent<uiManager>().ammoBar.color = Color.cyan;
+                UICanvas.GetComponent<uiManager>().ammoBar.color = Color.cyan;
+            }
+            else
+            {
+                UICanvas.GetComponent<uiManager>().ammoBar.color = Color.white;
             }
 
 
             if (Input.GetKeyDown(KeyCode.Mouse0) && currantMagazineAmmo > 0)
             {
-                if(timer <= 0)
+                print("fire");
+                updateUI();
+                if (timer <= 0)
                 {
                     fireWeapon(fireRate);
-                    updateUI();
                 }                
             }
             else if(Input.GetKeyDown(KeyCode.R) || currantMagazineAmmo <= 0)
@@ -48,16 +59,25 @@ public class projectileWeapons : Weapon
             }
 
             //zooms in when aiming
-            if (Input.GetKeyDown(KeyCode.Mouse1))
+            if(cam != null)
             {
-                cam.GetComponent<playerCameraMovement>().distance = 2;
+                if (Input.GetKeyDown(KeyCode.Mouse1))
+                {
+                    cam.GetComponent<playerCameraMovement>().distance = 2;
 
+                }
+                else if (Input.GetKeyUp(KeyCode.Mouse1))
+                {
+                    cam.GetComponent<playerCameraMovement>().distance = 5;
+
+                }
             }
-            else if (Input.GetKeyUp(KeyCode.Mouse1))
+            else
             {
-                cam.GetComponent<playerCameraMovement>().distance = 5;
-
+                cam = Camera.main;
+                Debug.Log("camera reference saved");
             }
+
         }
         else
         {
@@ -71,17 +91,16 @@ public class projectileWeapons : Weapon
             //instanstiate projectile prefabs and creates more depending on fire rate
             for (int i = 0; i < fireRate; i++)
             {
-                print(transform.GetChild(0).gameObject.name);
+                GameObject inst = Instantiate(projectile, transform.localPosition, transform.rotation);
 
-                GameObject inst = Instantiate(projectile, transform.position, Quaternion.identity);
-
-                inst.transform.SetParent(this.transform);
+                //inst.transform.SetParent(this.transform);
                 inst.GetComponent<Rigidbody>().AddForce(Vector3.forward * 100.0f);
+                //inst.transform.parent = null;
 
                 //decrease ammo
                 currantMagazineAmmo--;
-
             }
+            updateUI();
         }
         else
         {
@@ -101,11 +120,11 @@ public class projectileWeapons : Weapon
         }
     }
 
-    void updateUI()
+    public void updateUI()
     {
-        //sends weapon info to the UI
-        uiCanvas.GetComponent<uiManager>().updateWeaponUI(maxCurrantMagazine, currantMagazineAmmo, remainingMagazines, icon);
+        UIobject.gameObject.GetComponent<uiManager>().updateWeaponUI(currantMagazineAmmo,remainingMagazines,icon);
     }
+
 }
 
 

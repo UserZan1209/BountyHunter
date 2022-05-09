@@ -6,53 +6,64 @@ using UnityEngine.UI;
 
 public class EnemyController : Enemy
 {
-    [SerializeField] private NavMeshAgent agent;
+    //references
+    [HideInInspector] private NavMeshAgent agent;
     [SerializeField] private GameObject player;
+    [SerializeField] private GameObject myHead;
 
+    //UI components
+    [SerializeField] private Canvas myStatCanvas;
     [SerializeField] private Image healthBar;
     [SerializeField] private Image staminaBar;
 
-    protected enum AImode { def ,melee, ranged}
-    [SerializeField] protected AImode AIMode = AImode.def;
+    //AI variables
+    protected enum AImode { def ,melee, ranged, target}
+    [SerializeField] protected AImode AIMode;
 
-    [SerializeField] protected GameObject weapon;
+    //Combat variables
+    [SerializeField] protected GameObject weaponMelee;
+    [SerializeField] protected GameObject weaponRanged;
+    [HideInInspector] protected float attackTimer;
+    [HideInInspector] protected float timer2;
+    [HideInInspector] protected bool waitingForWakeUp;
 
-    [SerializeField] protected float timer2;
-    [SerializeField] protected bool waitingForWakeUp;
     // Start is called before the first frame update
     void Start()
     {
         InitMe();
         waitingForWakeUp = false;
-
-        if(weapon == null || weapon.gameObject.name == "weaponMelee")
-        {
-            AIMode = AImode.melee;
-        }
-        else
-        {
-            AIMode = AImode.ranged;
-        }
-
+        attackTimer = 0;
+        getPlayer();
+        selectAI(weaponRanged);
         agent = GetComponent<NavMeshAgent>();
-        checkForPlayer();
+        
         
     }
 
     // Update is called once per frame
     void Update()
     {
+        moveToPlayer();
+    }
 
+    private void FixedUpdate()
+    {
         checkForRagdoll();
         enableDisableRagdoll();
-        moveToPlayer();
+        statUIController();
+    }
 
-        if (Input.GetKeyDown(KeyCode.H))
+    protected void selectAI(GameObject w)
+    {
+        //using the ranged weapon slot decided AI mode
+        if(w != null)
         {
-            useStamina(10.0f);
+            AIMode = AImode.ranged;
         }
-
-
+        else
+        {
+            AIMode = AImode.melee;
+        }
     }
 
     protected void checkForRagdoll()
@@ -61,14 +72,19 @@ public class EnemyController : Enemy
         {
             // the object is currently being destroyed at 0 health in "Enemy.cs"
             toggleRagdoll();
-            my_life_state = LifeState.isdead;
             player.GetComponent<playerProgressionn>().increaseExpAmount(baseExp);
+            my_life_state = LifeState.isdead;
+            myStatCanvas.enabled = false;   
         }
 
         if(stamina < maxstamina)
         {
             stamina += Time.deltaTime * 10.0f;
-            staminaBar.GetComponent<Image>().fillAmount = stamina / 100;
+            if(myStatCanvas != null && staminaBar != null)
+            {
+                staminaBar.GetComponent<Image>().fillAmount = stamina / 100;
+            }
+            
         }
         if(stamina <= 0)
         {
@@ -93,21 +109,30 @@ public class EnemyController : Enemy
 
     protected void enableDisableRagdoll()
     {
-        if (myAnim.enabled == false)
+        if(myAnim != null)
         {
-            my_ragdoll_state = RagdollState.isRagdoll;
-            my_movement_state = MovementState.isPhysics;
+            if (myAnim.enabled == false)
+            {
+                my_ragdoll_state = RagdollState.isRagdoll;
+                my_movement_state = MovementState.isPhysics;
+            }
+            else if (myAnim.enabled == true)
+            {
+                my_ragdoll_state = RagdollState.isNotRagdoll;
+                my_movement_state = MovementState.isNotPhysics;
+            }
         }
-        else if (myAnim.enabled == true)
+        else
         {
-            my_ragdoll_state = RagdollState.isNotRagdoll;
-            my_movement_state = MovementState.isNotPhysics;
+            myAnim = gameObject.GetComponent<Animator>();
+            //Debug.Log("Animator added to references");
         }
+
     }
 
-    protected void checkForPlayer()
+    protected void getPlayer()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = gameEvents.current.playerObject;
     }
 
     protected void moveToPlayer()
@@ -126,9 +151,14 @@ public class EnemyController : Enemy
                     {
                         if (!waitingForWakeUp)
                         {
+                            print("ready to attack");
+                            myAnim.SetBool("isAttacking", false);
                             agent.SetDestination(player.transform.position);
-                            meleeCombat();
                         }
+                    }
+                    else if(distanceToPlayer <= 1)
+                    {
+                        meleeCombat();
                     }
                     break;
                 case AImode.ranged:
@@ -138,6 +168,7 @@ public class EnemyController : Enemy
                     }
                     else
                     {
+                        //add a check if there is no ammo drop weapon and switch to melee
                         rangedCombat();  
                     }
                     break;
@@ -148,32 +179,68 @@ public class EnemyController : Enemy
     override public void takeDamage(float d)
     {
         health -= d;
-        healthBar.GetComponent<Image>().fillAmount = health/10;
+        if(myStatCanvas != null && healthBar != null)
+        {
+            healthBar.GetComponent<Image>().fillAmount = health / 10;
+        }
     }
-
     public void useStamina(float s)
     {
         stamina -= s;
-        staminaBar.GetComponent<Image>().fillAmount = stamina / 100;
+        if(myStatCanvas != null && staminaBar != null)
+        {
+            staminaBar.GetComponent<Image>().fillAmount = stamina / 100;
+        }
     }
 
     protected void meleeCombat()
     {
-        float timer = 0;
-        if(timer < 0)
+
+        if (attackTimer < 0)
         {
+            stamina -= 35.0f;
             print("attacking player");
-            timer += 4.5f;
+            myAnim.SetBool("isAttacking",true);
+            player.GetComponent<playerMovement>().healPlayer(-5.0f);
+            attackTimer += 3.0f;
         }
         else
         {
-            timer -= Time.deltaTime;
+            if (attackTimer < 0.1f)
+            {
+                myAnim.SetBool("isAttacking", false);
+            }
+            attackTimer -= Time.deltaTime;
         }
     }
 
     protected void rangedCombat()
     {
-        Debug.Log("ranged");
+        //Debug.Log("ranged");
+    }
+
+    protected void toggleAnimIsAttacking()
+    {
+        if(attackTimer != 0)
+        {
+            print("cant attack");
+            
+        }
+        else
+        {
+            myAnim.SetBool("isAttacking", !myAnim.GetBool("isAttacking"));
+        }
+        
+    }
+
+    protected void statUIController() 
+    {
+        if(myStatCanvas != null && player != null)
+        {
+            //myStatCanvas.transform.LookAt(player.transform.position);
+            myStatCanvas.transform.position = new Vector3( myHead.transform.position.x, myHead.transform.position.y + 0.5f, myHead.transform.position.z);    
+            
+        }
     }
 }
 

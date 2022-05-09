@@ -23,7 +23,8 @@ public class playerCameraMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        gameEvents.current.setPlayer(GameObject.FindGameObjectWithTag("Player"));
+        Player = gameEvents.current.playerObject.GetComponent<Transform>();
 
     }
 

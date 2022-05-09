@@ -17,12 +17,14 @@ public class EnemyTarget : EnemyController
         gameManager = gameEvents.current.gameObject;
         gameEvents.onTargetDeath += onTargetDeath;
 
-        AIMode = AImode.ranged;
+        AIMode = AImode.target;
 
         if(gameManager == null)
         {
             Debug.Log(gameObject.name + "cannot find the game manager");
         }
+
+        getPlayer();
     }
 
     // Update is called once per frame
@@ -30,6 +32,7 @@ public class EnemyTarget : EnemyController
     {
         if(health <= 0 && isTargetAlive)
         {
+            gameEvents.current.mainMissionEnd();
             this.GetComponent<Animator>().enabled = false;
             timer += 10.0f;
             isTargetAlive = false;

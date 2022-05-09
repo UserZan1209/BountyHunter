@@ -21,4 +21,9 @@ public class mainMenuManager : MonoBehaviour
     {
         SceneManager.LoadScene("DebugScene");
     }
+
+    public void loadGame()
+    {
+        gameEvents.current.loadGame();
+    }
 }
