@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class playerMovement : player
 {
@@ -50,6 +51,11 @@ public class playerMovement : player
                 gameEvents.current.updateStamina(stamina);
             }
             
+        }
+        else
+        {
+            gameEvents.current.triggerAutoSave();
+            SceneManager.LoadScene("S_HubArea");
         }
 
         //if the stamina is too low then drop all weapons and ragdoll

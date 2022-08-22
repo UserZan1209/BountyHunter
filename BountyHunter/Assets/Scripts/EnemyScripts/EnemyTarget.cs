@@ -41,6 +41,7 @@ public class EnemyTarget : EnemyController
         if(timer < 0.5f && !isTargetAlive)
         {
             //Loads next scene
+            gameEvents.current.triggerAutoSave();
             gameEvents.current.targetDeath();
         }
         else if(timer >= 0.5f && !isTargetAlive)

@@ -13,6 +13,8 @@ public class uiManager : MonoBehaviour
     [SerializeField] protected Text magazinesText;
     [SerializeField] protected GameObject bottomLeftUI;
     [SerializeField] protected Text textBoxText;
+    [SerializeField] protected string sceneOnFirstFrame;
+    [SerializeField] protected string sceneOnlastFrame;
     [Space]
 
     //pausemenu
@@ -20,6 +22,7 @@ public class uiManager : MonoBehaviour
 
     [Space]
     //UI bars
+    [SerializeField] protected GameObject topLeft;
     [SerializeField] protected Image expBar;
     [SerializeField] protected Image healthBar;
     [SerializeField] protected Image staminaBar;
@@ -48,6 +51,8 @@ public class uiManager : MonoBehaviour
     [SerializeField] protected Text questItemNameUI;
 
     [SerializeField] protected GameObject shopMenu;
+
+    [SerializeField] protected GameObject controlMenu;
     
 
     // Start is called before the first frame update
@@ -55,22 +60,14 @@ public class uiManager : MonoBehaviour
     {
         initMe();
 
+
+        sceneOnFirstFrame = SceneManager.GetActiveScene().name;
         gameEvents.current.setMainUI(gameObject);
 
-        if(SceneManager.GetActiveScene().name != "MainMenu")
-        {
-            topRight.SetActive(true);
-        }
-        else
-        {
-            topRight.SetActive(false);
-        }
 
         //if player is null attempt to find it by tag
         if (player != null)
         {
-
-            mainGoalText.text = "Eliminate Target";
             level.text = player.GetComponent<playerProgressionn>().level.ToString();
             sideGoalText.enabled = false;
         }
@@ -80,6 +77,10 @@ public class uiManager : MonoBehaviour
             player = gameEvents.current.playerObject;
         }
 
+
+        topRight.SetActive(false);
+        topLeft.SetActive(false);
+        controlMenu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -97,6 +98,49 @@ public class uiManager : MonoBehaviour
             Debug.Log("Player cannot be found on the UI Manager Script");
             gameEvents.current.setPlayer(GameObject.FindGameObjectWithTag("Player"));
             player = gameEvents.current.playerObject;
+        }
+
+        sceneOnlastFrame = SceneManager.GetActiveScene().name;
+        if(sceneOnFirstFrame != sceneOnlastFrame)
+        {
+            sceneOnFirstFrame = sceneOnlastFrame;
+            if(sceneOnlastFrame != "MainMenu")
+            {
+                topRight.SetActive(true);
+                mainGoalText.text = "Eliminate target";
+                sideGoalText.enabled=false;
+                topLeft.SetActive(true);
+                
+            }
+            else if(sceneOnFirstFrame == "S_HubArea")
+            {
+
+                gameEvents.current.triggerAutoSave();
+
+                mainGoalText.text = "select a mission";
+                sideGoalText.enabled = false;
+
+                topRight.SetActive(false);
+                topLeft.SetActive(false);
+
+            }
+            else if(sceneOnFirstFrame == "Debug_Scene")
+            {
+                player.GetComponent<playerProgressionn>().resetStat();
+            }
+            else 
+            {
+
+                mainGoalText.text = "Inactive";
+                topRight.SetActive(false);
+                topLeft.SetActive(false);
+            }
+
+            if(SceneManager.GetActiveScene().name == "MainMenu")
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
         }
 
     }
@@ -293,6 +337,14 @@ public class uiManager : MonoBehaviour
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
+        }
+    }
+
+    public void toggleControlMenu()
+    {
+        if(controlMenu != null)
+        {
+            controlMenu.SetActive(!controlMenu.activeInHierarchy);
         }
     }
 

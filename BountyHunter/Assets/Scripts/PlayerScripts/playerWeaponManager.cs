@@ -136,6 +136,8 @@ public class playerWeaponManager : MonoBehaviour
                 myCurrantWeapon = cWeapon.gameObject;
                 myCurrantWeapon.GetComponent<Weapon>().setHand(myRightHand);
                 myTargetWeapon.gameObject.transform.SetParent(myRightHand.transform);
+                //myTargetWeapon.transform.rotation = new Quaternion(myRightHand.transform.rotation.x, myRightHand.transform.rotation.y + 90, myRightHand.transform.rotation.z, myRightHand.transform.rotation.w);
+
             }
             else
             {
@@ -143,7 +145,7 @@ public class playerWeaponManager : MonoBehaviour
                 myCurrantWeapon = myTargetWeapon;
                 myTargetWeapon.GetComponent<Weapon>().setHand(myRightHand);
                 myTargetWeapon.gameObject.transform.SetParent(myRightHand.transform);
-                myTargetWeapon.transform.rotation = myRightHand.transform.rotation;
+                //myTargetWeapon.transform.rotation = new Quaternion (myRightHand.transform.rotation.x, myRightHand.transform.rotation.y + 90, myRightHand.transform.rotation.z, myRightHand.transform.rotation.w);
                 //logic used when picking up a second weapon / replacing a weapon
                 switch (cWeapon.gameObject.name)
                 {

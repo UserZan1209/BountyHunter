@@ -8,7 +8,8 @@ public class projectileWeapons : Weapon
     [SerializeField] GameObject projectile;
     [SerializeField] protected Canvas uiCanvas;
 
-    [SerializeField] protected GameObject bulletStartObj;
+    [SerializeField] public GameObject startObject;
+    [SerializeField] public static Transform spawnPoint;
     [SerializeField] protected GameObject UIobject;
 
     [SerializeField] protected int maxCurrantMagazine;
@@ -83,20 +84,22 @@ public class projectileWeapons : Weapon
         {
             //Debug.Log("No ammo remaining");
         }
+
+        
     }
     void fireWeapon(float fireRate)
     {
-        if(currantMagazineAmmo > 0)
+        spawnPoint = startObject.transform;
+        if (currantMagazineAmmo > 0)
         {
             //instanstiate projectile prefabs and creates more depending on fire rate
             for (int i = 0; i < fireRate; i++)
             {
-                GameObject inst = Instantiate(projectile, transform.localPosition, transform.rotation);
+                GameObject inst = Instantiate(projectile, spawnPoint.position, spawnPoint.rotation);
+                
 
                 //inst.transform.SetParent(this.transform);
-                inst.GetComponent<Rigidbody>().AddForce(Vector3.forward * 100.0f);
-                //inst.transform.parent = null;
-
+                inst.transform.parent = null;
                 //decrease ammo
                 currantMagazineAmmo--;
             }

@@ -68,43 +68,56 @@ public class EnemyController : Enemy
 
     protected void checkForRagdoll()
     {
-        if (health <= 0 && my_life_state != LifeState.isdead)
-        {
-            // the object is currently being destroyed at 0 health in "Enemy.cs"
-            toggleRagdoll();
-            player.GetComponent<playerProgressionn>().increaseExpAmount(baseExp);
-            my_life_state = LifeState.isdead;
-            myStatCanvas.enabled = false;   
-        }
 
-        if(stamina < maxstamina)
+        if(my_life_state != LifeState.isdead)
         {
-            stamina += Time.deltaTime * 10.0f;
-            if(myStatCanvas != null && staminaBar != null)
+            if (health <= 0)
             {
-                staminaBar.GetComponent<Image>().fillAmount = stamina / 100;
+                if(player == null)
+                {
+                    player = gameEvents.current.playerObject;
+                }
+                // the object is currently being destroyed at 0 health in "Enemy.cs"
+                toggleRagdoll();
+                player.GetComponent<playerProgressionn>().increaseExpAmount(baseExp);
+                gameEvents.current.finishQuest();
+                if(myStatCanvas != null)
+                {
+                    myStatCanvas.enabled = false;
+                }
+                my_life_state = LifeState.isdead;
             }
-            
-        }
-        if(stamina <= 0)
-        {
-            toggleRagdoll();
-            timer2 += 5.0f;
-            
-            stamina = 30.0f;
-            waitingForWakeUp = true;
-        }
 
-        if (waitingForWakeUp)
-        {
-            agent.SetDestination(transform.position);
-            timer2 -= Time.deltaTime;
-            if(timer2 <= 0)
+            if (stamina < maxstamina)
+            {
+                stamina += Time.deltaTime * 10.0f;
+                if (myStatCanvas != null && staminaBar != null)
+                {
+                    staminaBar.GetComponent<Image>().fillAmount = stamina / 100;
+                }
+
+            }
+            if (stamina <= 0)
             {
                 toggleRagdoll();
-                waitingForWakeUp = false;
+                timer2 += 5.0f;
+
+                stamina = 30.0f;
+                waitingForWakeUp = true;
+            }
+
+            if (waitingForWakeUp)
+            {
+                agent.SetDestination(transform.position);
+                timer2 -= Time.deltaTime;
+                if (timer2 <= 0)
+                {
+                    toggleRagdoll();
+                    waitingForWakeUp = false;
+                }
             }
         }
+
     }
 
     protected void enableDisableRagdoll()

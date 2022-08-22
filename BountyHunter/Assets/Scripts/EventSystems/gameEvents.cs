@@ -154,6 +154,12 @@ public class gameEvents : MonoBehaviour
     {
         updateWeaponUI?.Invoke();
     }
+
+    public static event Action autoSave;
+    public void triggerAutoSave()
+    {
+        autoSave?.Invoke();
+    }
     
     //make action for open levels menu
 }

@@ -87,7 +87,7 @@ public class NPCController : MonoBehaviour
     private void spawnReward()
     {
         //spawn quest.item
-        Instantiate(quest.itemGained, gameObject.transform.position, Quaternion.identity);
+        Instantiate(quest.itemGained, gameEvents.current.playerObject.gameObject.transform.position, Quaternion.identity);
         Debug.Log("item spawned");
     }
 }

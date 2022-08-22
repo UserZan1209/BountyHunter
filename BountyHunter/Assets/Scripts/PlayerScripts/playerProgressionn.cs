@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class playerProgressionn : MonoBehaviour
 {
@@ -12,17 +13,31 @@ public class playerProgressionn : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if(gameEvents.current.recentSaveData != null)
+        //load
+        if(SceneManager.GetActiveScene().name != "DebugScene")
         {
-            SaveData sD = gameEvents.current.recentSaveData;
-            level = sD.level;
+            if (gameEvents.current.recentSaveData != null)
+            {
+                SaveData sD = gameEvents.current.recentSaveData;
+                level = sD.level;
+                XPthisLevel = sD.xpThisLevel;
 
-            gameEvents.current.changeLevelUI();
+                print("level = "+level + "xp = "+XPthisLevel);
+
+                calculateReqExp();
+
+                gameEvents.current.changeLevelUI();
+            }
+            else
+            {
+                level = 1;
+            }
         }
         else
         {
             level = 1;
         }
+
        
         calculateReqExp();
     }
@@ -62,5 +77,11 @@ public class playerProgressionn : MonoBehaviour
     private void calculateReqExp()
     {
         requiredXP = level * 50;
+    }
+    
+    public void resetStat()
+    {
+        level = 1;
+
     }
 }

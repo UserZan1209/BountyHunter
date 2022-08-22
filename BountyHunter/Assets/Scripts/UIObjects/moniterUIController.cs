@@ -45,6 +45,7 @@ public class moniterUIController : MonoBehaviour
                 computerScreen.SetActive(true);
                 player.GetComponent<playerMovement>().canRotate = false;
                 cam.GetComponent<playerCameraMovement>().sensivity = 0;
+                Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
             }
             else if(Input.GetKeyUp(KeyCode.E) && computerScreen.activeInHierarchy == true)
@@ -54,6 +55,7 @@ public class moniterUIController : MonoBehaviour
                 computerScreen.SetActive(false);
                 player.GetComponent<playerMovement>().canRotate = true;
                 cam.GetComponent<playerCameraMovement>().sensivity = defSensitivity;
+                Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
         }
@@ -99,6 +101,7 @@ public class moniterUIController : MonoBehaviour
             cam.GetComponent<playerCameraMovement>().lookAt = playerHead;
             interactPromptKimage.enabled = false;
             player = null;
+
         }
     }
 

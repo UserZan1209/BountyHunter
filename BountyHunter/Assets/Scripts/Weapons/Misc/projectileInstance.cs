@@ -6,18 +6,18 @@ public class projectileInstance : MonoBehaviour
 {
     [SerializeField] protected GameObject player;
     [SerializeField] protected GameObject currantWeapon;
-    [SerializeField] protected GameObject bulletStartPoint;
+    [SerializeField] static public GameObject bulletStartPoint;
 
     [SerializeField] protected Rigidbody myRb;
+
+    [SerializeField] protected float damage;
 
     float timer = 0.0f;
     // Start is called before the first frame update
     void Start()
     {
         Init();
-        //transform.position = bulletStartPoint.transform.position;
-        //transform.rotation = Camera.main.GetComponent<Transform>().rotation;
-        //myRb.AddForce(Vector3.forward * 50.0f);
+        myRb.AddForce(projectileWeapons.spawnPoint.transform.right * 2000.0f);
         timer += 10;
     }
 
@@ -29,12 +29,21 @@ public class projectileInstance : MonoBehaviour
     protected void Init()
     {
         myRb = GetComponent<Rigidbody>();
-
+        damage = 10.0f;
         player = GameObject.FindGameObjectWithTag("Player");
         currantWeapon = player.GetComponent<playerWeaponManager>().myCurrantWeapon;
         
 
-        //transform.parent = null;
+        transform.parent = null;
+    }
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        if(collision.gameObject.tag == "Enemy")
+        {
+            collision.gameObject.GetComponent<EnemyController>().takeDamage(damage);
+            Destroy(gameObject);
+        }
     }
 
     void projectileDestruction()
